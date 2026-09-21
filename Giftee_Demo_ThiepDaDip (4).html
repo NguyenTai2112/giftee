@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Giftee · Thiệp điện tử cho mọi dịp</title>
+<style>
+  :root{
+    --ink:#1E1B19; --ink-soft:#4A423D; --muted:#8C827B;
+    --paper:#FBF8F5; --paper-2:#F2EBE4; --card:#FFFFFF; --line:#EAE1D9;
+    --accent:#F08B71; --accent-deep:#DE5F3E; --accent-wash:#FDEEE8;
+    --slate:#3E7C8C; --good:#5E8C6A; --gold:#E3A24A;
+    --shadow:0 1px 2px rgba(30,27,25,.05),0 12px 34px rgba(30,27,25,.09);
+    --r:18px;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+    box-sizing:border-box;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--paper);color:var(--ink);
+    font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",Arial,sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background .5s}
+  button{font-family:inherit;cursor:pointer}
+  .wrap{max-width:620px;margin:0 auto;padding:0 18px 70px}
+
+  .top{position:sticky;top:0;z-index:30;background:rgba(251,248,245,.93);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+  .top .in{max-width:620px;margin:0 auto;display:flex;align-items:center;gap:10px;height:56px;padding:0 18px}
+  .brand{font-weight:800;font-size:1.15rem;display:flex;align-items:center;gap:1px;letter-spacing:-.02em}
+  .brand .star{color:var(--accent);font-size:1.22rem}
+  .badge{margin-left:auto;font-size:.74rem;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--paper-2);color:var(--ink-soft)}
+  .prog{display:flex;gap:5px;max-width:620px;margin:0 auto;padding:10px 18px 0}
+  .prog i{flex:1;height:5px;border-radius:99px;background:var(--paper-2)}
+  .prog i.on{background:var(--accent)} .prog i.done{background:var(--slate)}
+
+  h1{font-size:1.55rem;letter-spacing:-.025em;margin:22px 0 6px;line-height:1.14}
+  h2{font-size:1.24rem;letter-spacing:-.015em;margin:6px 0 4px}
+  p.sub{color:var(--ink-soft);margin:0 0 18px}
+  .muted{color:var(--muted);font-size:.86rem}
+  .center{text-align:center}
+
+  .screen{display:none;animation:fade .45s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin:14px 0}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:13px;
+    padding:15px 20px;font-size:1rem;font-weight:700;background:var(--accent);color:#fff;width:100%;transition:transform .1s,filter .2s}
+  .btn:active{transform:scale(.98)} .btn:hover{filter:brightness(1.04)}
+  .btn.ghost{background:var(--paper-2);color:var(--ink)} .btn.dark{background:var(--ink)} .btn.slate{background:var(--slate)}
+  .btn:disabled{opacity:.42;cursor:not-allowed}
+  .btn.sm{width:auto;padding:11px 16px;font-size:.9rem;border-radius:11px}
+  .row{display:flex;gap:10px}.row>*{flex:1}
+  input[type=text],input[type=email]{width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:1rem;background:var(--card);color:var(--ink)}
+  label{font-size:.82rem;font-weight:700;color:var(--ink-soft);display:block;margin:14px 0 6px}
+  .pill{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 11px;border-radius:99px;background:var(--accent-wash);color:var(--accent-deep)}
+  .note{font-size:.8rem;color:var(--muted);background:var(--paper-2);border-radius:11px;padding:11px 13px;margin-top:14px}
+  a.link{color:var(--accent-deep);font-weight:700;cursor:pointer}
+
+  /* occasion grid */
+  .occ{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+  .occ button{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:18px 12px;text-align:center;transition:transform .1s,border-color .15s}
+  .occ button:active{transform:scale(.97)}
+  .occ button .e{font-size:2.3rem;line-height:1}
+  .occ button .n{font-weight:700;margin-top:8px;font-size:.98rem}
+  .occ button .d{font-size:.76rem;color:var(--muted);margin-top:2px}
+
+  /* stage / video */
+  .stage{position:relative;width:100%;aspect-ratio:3/4;background:#101010;border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
+  .stage video,.stage .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .stage .bg{display:flex;align-items:center;justify-content:center;font-size:4.4rem}
+  .badge-cam{position:absolute;top:12px;padding:5px 11px;border-radius:99px;font-size:.8rem;font-weight:700;color:#fff;background:rgba(0,0,0,.5);z-index:6}
+  .rec-dot{left:12px;display:flex;align-items:center;gap:7px}.rec-dot b{width:10px;height:10px;border-radius:50%;background:#ff4d4d;animation:blink 1s infinite}
+  @keyframes blink{50%{opacity:.25}} .timer{right:12px}
+  .overlay{position:absolute;inset:0;z-index:4;pointer-events:none}
+  .overlay .sticker{pointer-events:auto}
+  .sticker{position:absolute;font-size:2.7rem;cursor:grab;user-select:none;touch-action:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
+  .msg-on{position:absolute;left:0;right:0;bottom:16px;text-align:center;color:#fff;font-weight:700;font-size:1.08rem;
+    text-shadow:0 2px 8px rgba(0,0,0,.7);padding:0 18px;z-index:5;word-break:break-word}
+  /* sticker animations */
+  .anim-float{animation:af 2.2s ease-in-out infinite}@keyframes af{50%{transform:translateY(-10px)}}
+  .anim-pulse{animation:ap 1.3s ease-in-out infinite}@keyframes ap{50%{transform:scale(1.22)}}
+  .anim-spin{animation:asp 3s linear infinite}@keyframes asp{to{transform:rotate(360deg)}}
+  .anim-sway{animation:asw 2.6s ease-in-out infinite}@keyframes asw{25%{transform:rotate(12deg)}75%{transform:rotate(-12deg)}}
+
+  .palette{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .palette button{font-size:1.6rem;background:var(--paper-2);border:1px solid var(--line);border-radius:12px;width:52px;height:52px;line-height:1}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .chip{padding:9px 14px;border:1.5px solid var(--line);border-radius:99px;background:var(--card);font-size:.88rem;font-weight:600}
+  .chip.on{border-color:var(--accent-deep);background:var(--accent-wash);color:var(--accent-deep)}
+  .slider{width:100%;margin-top:10px}
+  .switch{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:.9rem}
+  .switch input{width:44px;height:26px;appearance:none;background:var(--paper-2);border-radius:99px;position:relative;transition:.2s;cursor:pointer}
+  .switch input:checked{background:var(--good)}
+  .switch input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s}
+  .switch input:checked::after{left:21px}
+
+  /* e-gift tiers */
+  .tiers{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+  .tier{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;transition:border-color .15s,transform .1s}
+  .tier:active{transform:scale(.99)} .tier.on{border-color:var(--accent-deep);background:var(--accent-wash)}
+  .tier .e{font-size:1.6rem} .tier .nm{font-weight:700} .tier .d{font-size:.8rem;color:var(--muted)}
+  .tier.on::after{content:"✓";margin-left:auto;color:var(--accent-deep);font-weight:800;font-size:1.2rem}
+
+  /* recipient envelope opening */
+  .envelope{position:relative;width:100%;max-width:420px;margin:20px auto;aspect-ratio:3/4;cursor:pointer;perspective:1400px}
+  .env-card{position:absolute;inset:0;border-radius:var(--r);background:linear-gradient(160deg,var(--accent),var(--accent-deep));
+    display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;box-shadow:var(--shadow);
+    transition:transform 1.1s cubic-bezier(.6,.05,.2,1),opacity 1.1s;transform-origin:top center}
+  .env-card .e{font-size:4rem} .env-card .t{font-weight:700;margin-top:10px;font-size:1.1rem;padding:0 20px;text-align:center}
+  .env-card .h{font-size:.85rem;opacity:.85;margin-top:14px}
+  .envelope.open .env-card{transform:rotateX(-115deg);opacity:0}
+  .reveal-stage{position:absolute;inset:0;border-radius:var(--r);overflow:hidden;opacity:0;transform:scale(.85);transition:opacity 1s .5s,transform 1s .5s;border:1px solid var(--line);background:#101}
+  .envelope.open .reveal-stage{opacity:1;transform:scale(1)}
+  .reveal-stage video,.reveal-stage .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .reveal-stage .bg{display:flex;align-items:center;justify-content:center;font-size:4.4rem}
+
+  /* cake */
+  .ritual-wrap{display:flex;flex-direction:column;align-items:center;padding:6px 0}
+  .cake{position:relative;width:240px;height:180px;margin:26px auto 6px}
+  .plate{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:240px;height:22px;background:#EFE7E0;border-radius:50%}
+  .tierc{position:absolute;left:50%;transform:translateX(-50%);border-radius:14px 14px 8px 8px}
+  .t1{bottom:14px;width:196px;height:72px;background:linear-gradient(#F6C9B6,#EBA98F)}
+  .t2{bottom:80px;width:144px;height:54px;background:linear-gradient(#FBD9CB,#F3B79C)}
+  .frost{position:absolute;left:50%;transform:translateX(-50%);height:16px;background:#fff;border-radius:12px}
+  .f1{bottom:72px;width:196px}.f2{bottom:126px;width:144px}
+  .candle{position:absolute;bottom:134px;width:8px;height:32px;background:linear-gradient(#fff,#ffd,#F0B7A0);border-radius:2px;transform:translateX(-50%)}
+  .flame{position:absolute;top:-16px;left:50%;transform:translateX(-50%);width:12px;height:18px;
+    background:radial-gradient(circle at 50% 70%,#fff 0%,#ffd54a 35%,#ff8a34 75%,#ff5a1f 100%);
+    border-radius:50% 50% 50% 50%/60% 60% 40% 40%;filter:drop-shadow(0 0 6px #ffb020);
+    animation:flick .25s infinite alternate;transform-origin:bottom center}
+  @keyframes flick{from{transform:translateX(-50%) scale(1) rotate(-3deg)}to{transform:translateX(-50%) scale(1.12) rotate(3deg)}}
+  .candle.out .flame{display:none}
+  .candle .smoke{position:absolute;top:-14px;left:50%;transform:translateX(-50%);opacity:0;font-size:.8rem}
+  .candle.out .smoke{animation:puff 1.2s ease forwards}
+  @keyframes puff{0%{opacity:.7;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-26px)}}
+  .memorial-flame{background:radial-gradient(circle at 50% 70%,#fff 0%,#ffe9b0 40%,#ffcf6b 100%);filter:drop-shadow(0 0 7px #ffd98a)}
+  .candle .memorial-flame{display:none}
+  .candle.lit .memorial-flame{display:block;animation:flick .3s infinite alternate}
+
+  .toast-scene{font-size:4.6rem;margin:30px 0;cursor:pointer;user-select:none;transition:transform .1s}
+  .toast-scene:active{transform:scale(.94)}
+  .meter{height:12px;background:var(--paper-2);border-radius:99px;overflow:hidden;margin:14px 0 4px}
+  .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--good),var(--gold),var(--accent-deep));transition:width .08s}
+
+  #particles{position:fixed;inset:0;pointer-events:none;z-index:60;display:none}
+  .codebox{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.45rem;font-weight:800;letter-spacing:2px;
+    background:var(--ink);color:#fff;border-radius:12px;padding:16px;text-align:center;cursor:pointer}
+  .big-emoji{font-size:3.6rem;text-align:center;margin:6px 0}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
+    padding:12px 20px;border-radius:99px;font-size:.9rem;font-weight:600;opacity:0;transition:all .3s;z-index:80;max-width:90%;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .musicbtn{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;width:46px;height:46px;border-radius:50%;
+    background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);font-size:1.2rem;display:none;align-items:center;justify-content:center}
+
+  /* ---- landing page ---- */
+  .hero{padding:24px 0 6px}
+  .tag{display:inline-block;font-size:.78rem;font-weight:700;color:var(--accent-deep);background:var(--accent-wash);border:1px solid #F6D8CD;padding:5px 13px;border-radius:999px;margin-bottom:16px}
+  .hero-h{font-size:clamp(1.75rem,7.5vw,2.6rem);line-height:1.08;letter-spacing:-.03em;margin:0 0 12px;font-weight:800}
+  .hero-p{color:var(--ink-soft);font-size:1.05rem;margin:0 0 22px}
+  .hero-cta{display:flex;gap:10px;flex-wrap:wrap}
+  .hero-cta .btn{width:auto;flex:1;min-width:150px;text-decoration:none}
+  .hero-visual{margin:30px auto 6px;width:min(280px,78%);aspect-ratio:3/4;border-radius:24px;
+    background:linear-gradient(160deg,var(--accent),var(--accent-deep));position:relative;box-shadow:var(--shadow);
+    display:flex;align-items:center;justify-content:center;transform:rotate(-3deg)}
+  .hero-visual .play{width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:1.7rem;color:var(--accent-deep)}
+  .hero-visual .e1{position:absolute;top:16px;left:18px;font-size:2rem;animation:af 2.4s ease-in-out infinite}
+  .hero-visual .e2{position:absolute;bottom:20px;right:20px;font-size:1.8rem;animation:ap 1.6s ease-in-out infinite}
+  .hero-visual .cap{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#fff;font-weight:700;font-size:.9rem;text-shadow:0 1px 4px rgba(0,0,0,.4)}
+  .lp-sec{padding:34px 0;border-top:1px solid var(--line);scroll-margin-top:72px}
+  .lp-h2{font-size:1.4rem;letter-spacing:-.02em;margin:0 0 4px;font-weight:800}
+  .lp-sub{color:var(--muted);margin:0 0 20px}
+  .feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+  .feat .e{font-size:1.7rem}.feat .t{font-weight:700;margin-top:8px;font-size:.96rem}.feat .d{font-size:.82rem;color:var(--muted);margin-top:3px}
+  .lp-role{font-size:.78rem;font-weight:800;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 8px}
+  .steps{display:flex;flex-direction:column;gap:10px}
+  .step{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px}
+  .step .n{flex:none;width:30px;height:30px;border-radius:9px;background:var(--accent);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .step .st{font-weight:700;font-size:.95rem}.step .sd{font-size:.83rem;color:var(--muted)}
+  .occ-show{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .occ-show button{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:16px 6px;text-align:center;box-shadow:var(--shadow);transition:transform .1s}
+  .occ-show button:active{transform:scale(.96)}
+  .occ-show .e{font-size:1.9rem}.occ-show .n{font-size:.8rem;font-weight:700;margin-top:6px}
+  .cta-band{margin:32px 0 10px;border-radius:22px;padding:30px 22px;text-align:center;background:linear-gradient(160deg,var(--accent),var(--accent-deep));color:#fff}
+  .cta-band h2{font-size:1.45rem;margin:0 0 8px}.cta-band p{opacity:.92;margin:0 0 18px}
+  .cta-band .btn{background:#fff;color:var(--accent-deep);width:auto;display:inline-flex}
+  footer.lp{border-top:1px solid var(--line);padding:26px 0 6px;color:var(--muted);font-size:.84rem}
+  footer.lp .brand{color:var(--ink);margin-bottom:8px}
+  @media(max-width:400px){.occ-show{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="in">
+  <span class="brand">giftee<span class="star">✳</span></span>
+  <span id="badge" class="badge">Thiệp điện tử</span>
+</div></div>
+<div class="prog" id="prog"></div>
+
+<div class="wrap">
+
+  <!-- HOME (LANDING) -->
+  <section class="screen active" id="home">
+    <div class="hero">
+      <span class="tag">✳ Thiệp video · quà tặng e-gift cho mọi dịp</span>
+      <h1 class="hero-h">Gói cả một khoảnh khắc<br>vào tấm thiệp bạn tự làm 🎬</h1>
+      <p class="hero-p">Tự quay video, chỉnh màu, dán nhãn động, chọn nhạc và gửi kèm e-gift. Người nhận mở thiệp, trải nghiệm nghi thức riêng theo từng dịp, lưu khoảnh khắc và nhận quà — tất cả ngay trên trình duyệt.</p>
+      <div class="hero-cta">
+        <button class="btn" onclick="go('occasion')">Tạo thiệp miễn phí →</button>
+        <a class="btn ghost" href="#how">Xem cách hoạt động</a>
+      </div>
+      <div class="hero-visual">
+        <span class="e1">🎂</span><span class="e2">🎉</span>
+        <div class="play">▶</div>
+        <div class="cap">Chúc mừng sinh nhật! 🥳</div>
+      </div>
+    </div>
+
+    <div class="lp-sec">
+      <h2 class="lp-h2">Vì sao chọn Giftee</h2>
+      <p class="lp-sub">Không chỉ là thiệp — là một trải nghiệm quà tặng trọn vẹn.</p>
+      <div class="feat-grid">
+        <div class="feat"><div class="e">🎥</div><div class="t">Tự thiết kế 100%</div><div class="d">Quay video, filter màu, nhãn dán động, nhạc nền — theo đúng gu của bạn.</div></div>
+        <div class="feat"><div class="e">🌐</div><div class="t">Ngay trên web</div><div class="d">Không cần cài app, chỉ cần trình duyệt &amp; webcam.</div></div>
+        <div class="feat"><div class="e">🎭</div><div class="t">Nghi thức theo dịp</div><div class="d">Thổi nến, chạm ly, thả bóng, thắp nến tưởng niệm... mỗi dịp một cảm xúc.</div></div>
+        <div class="feat"><div class="e">🎁</div><div class="t">Kèm e-gift giá trị</div><div class="d">Đổi bất kỳ quà nào trên Giftee hoặc quy đổi giá trị.</div></div>
+      </div>
+    </div>
+
+    <div class="lp-sec" id="how">
+      <h2 class="lp-h2">Cách hoạt động</h2>
+      <p class="lp-sub">Người tặng tạo trong vài phút — người nhận trải nghiệm tức thì.</p>
+      <div class="lp-role">👤 Người tặng</div>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div><div class="st">Chọn dịp &amp; quay video</div><div class="sd">6 loại dịp, quay ≤30s (có khử tạp âm).</div></div></div>
+        <div class="step"><div class="n">2</div><div><div class="st">Chỉnh màu &amp; nhãn dán động</div><div class="sd">Filter tươi/ấm/điện ảnh + sticker chuyển động + lời nhắn.</div></div></div>
+        <div class="step"><div class="n">3</div><div><div class="st">Chọn nhạc nền &amp; giá e-gift</div><div class="sd">Giai điệu hợp dịp + phân khúc giá quà.</div></div></div>
+        <div class="step"><div class="n">4</div><div><div class="st">Gửi qua email</div><div class="sd">Người nhận nhận link mở thiệp.</div></div></div>
+      </div>
+      <div class="lp-role">🎁 Người nhận</div>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div><div class="st">Mở thiệp (mở dần) &amp; xem video</div><div class="sd">Thiệp mở ra, video &amp; lời chúc hiện lên kèm nhạc.</div></div></div>
+        <div class="step"><div class="n">2</div><div><div class="st">Nghi thức theo dịp</div><div class="sd">Thổi nến bằng mic, chạm ly, thả bóng, thắp nến tưởng niệm...</div></div></div>
+        <div class="step"><div class="n">3</div><div><div class="st">Lưu khoảnh khắc &amp; nhận quà</div><div class="sd">Ảnh kỷ niệm gửi lại người tặng + mã đổi e-gift.</div></div></div>
+      </div>
+    </div>
+
+    <div class="lp-sec">
+      <h2 class="lp-h2">Dành cho mọi dịp</h2>
+      <p class="lp-sub">Chạm một dịp để bắt đầu ngay.</p>
+      <div class="occ-show" id="occShow"></div>
+    </div>
+
+    <div class="cta-band">
+      <h2>Sẵn sàng trao khoảnh khắc?</h2>
+      <p>Không cần tài khoản. Tạo tấm thiệp đầu tiên của bạn ngay.</p>
+      <button class="btn" onclick="go('occasion')">Bắt đầu ngay →</button>
+    </div>
+
+    <p class="note">💡 Demo cần quyền <b>camera</b> (quay) &amp; <b>micro</b> (một số nghi thức). Từ chối vẫn có nút thay thế. Nhạc nền tổng hợp trong trình duyệt (không dùng bản quyền). Tốt nhất trên Chrome.</p>
+
+    <footer class="lp">
+      <div class="brand" style="font-size:1.05rem;font-weight:800">giftee<span style="color:var(--accent)">✳</span></div>
+      <p>Thiệp video &amp; quà tặng e-gift cho mọi khoảnh khắc đời người.</p>
+      <p style="font-size:.78rem">Bản demo mô phỏng hành trình sản phẩm — không phải sản phẩm thương mại chính thức của Giftee Inc.</p>
+    </footer>
+  </section>
+
+  <!-- OCCASION -->
+  <section class="screen" id="occasion">
+    <h2>Chọn dịp</h2>
+    <p class="sub">Mỗi dịp có tông màu, nghi thức và nhạc phù hợp.</p>
+    <div class="occ" id="occGrid"></div>
+  </section>
+
+  <!-- CEREMONY (service: cầu an) -->
+  <section class="screen" id="ceremony">
+    <h2>① Con đặt lễ cầu an</h2>
+    <p class="sub">Chọn gói lễ, ngôi chùa và lời nguyện gửi gắm.</p>
+    <label>Gói lễ</label>
+    <div class="tiers" id="pkgList"></div>
+    <label>Chọn chùa thực hiện lễ</label>
+    <div class="chips" id="templeChips"></div>
+    <label>Lời nguyện / lời nhắn gửi người nhận</label>
+    <input type="text" id="ceMsg" maxlength="90" placeholder="Nguyện cầu bình an & sức khỏe cho mẹ...">
+    <label>Lễ đúng dịp</label>
+    <div class="chips" id="occDateChips"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn ghost sm" onclick="go('occasion')">← Quay lại</button>
+      <button class="btn" id="btnToLedger" disabled onclick="go('ledger')">Tiếp: xác nhận →</button>
+    </div>
+  </section>
+
+  <!-- LEDGER (Giftee tách đơn, chia dòng tiền) -->
+  <section class="screen" id="ledger">
+    <h2>② Giftee tách đơn &amp; phát hành</h2>
+    <p class="sub">Tạo sổ minh bạch, chia dòng tiền tới đúng các bên trong bộ máy Giftee.</p>
+    <div class="card" id="ledgerCard"></div>
+    <div class="note">Đây chính là vai trò nền tảng của Giftee: <b>eGift System</b> phát hành phiếu lễ cho chùa, <b>giftee for Business</b> quản trị đối tác &amp; đối soát, còn <b>app B2C</b> là nơi con đặt lễ. Mọi khoản được ghi sổ minh bạch để người nhận tra cứu.</div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn ghost sm" onclick="go('ceremony')">← Quay lại</button>
+      <button class="btn" onclick="go('send')">Tiếp: gửi thiệp →</button>
+    </div>
+  </section>
+
+  <!-- PHỞ TREO (community) -->
+  <section class="screen" id="treo">
+    <h2>Treo một suất ăn 🍜</h2>
+    <p class="sub">Trả trước một suất ăn, "treo" lại cho người cần — họ nhận miễn phí, ẩn danh &amp; minh bạch.</p>
+    <label>Chọn món</label><div class="chips" id="dishChips"></div>
+    <label>Số suất muốn treo</label><div class="chips" id="qtyChips"></div>
+    <label>Quán đối tác</label><div class="chips" id="shopChips"></div>
+    <label>Lời nhắn ẩn danh gửi người nhận</label>
+    <input type="text" id="treoMsg" maxlength="80" placeholder="Chúc bạn một ngày ấm lòng nhé!">
+    <div class="card" id="treoSummary"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn ghost sm" onclick="go('occasion')">← Quay lại</button>
+      <button class="btn" id="btnTreo" disabled onclick="doTreo()">🍜 Treo suất ăn →</button>
+    </div>
+  </section>
+
+  <section class="screen" id="board">
+    <div class="center"><div class="big-emoji">🍜</div><h2>Bảng phở treo cộng đồng</h2>
+    <p class="sub" id="boardSub"></p></div>
+    <div class="card" id="boardCard"></div>
+    <button class="btn" onclick="doClaim()">🙏 Tôi cần một suất</button>
+    <button class="btn ghost" style="margin-top:10px" onclick="restart()">Về trang chủ</button>
+    <p class="note">Vai người tặng đã treo xong. Bên dưới mô phỏng góc <b>người cần</b> nhận một suất — minh bạch số suất còn lại.</p>
+  </section>
+
+  <section class="screen" id="claim-done">
+    <div class="center"><div class="big-emoji">🤍</div><h2>Bạn đã nhận một suất ăn</h2>
+    <p class="sub">Đưa mã này tại quán đối tác để nhận suất ăn miễn phí.</p></div>
+    <div class="card center">
+      <div style="font-size:2.4rem" id="claimShop">🍜</div>
+      <div style="font-weight:700;margin-top:6px" id="claimDish"></div>
+      <div class="codebox" id="claimCode" style="margin-top:12px" onclick="copyClaim()"></div>
+      <p class="muted" style="margin-top:10px" id="claimMsg"></p>
+    </div>
+    <div class="card" id="claimLedger"></div>
+    <button class="btn ghost" onclick="restart()">Về trang chủ</button>
+  </section>
+
+  <section class="screen" id="record">
+    <h2 id="recTitle">Quay video thiệp</h2>
+    <p class="sub">Tối đa 30 giây. Bạn có thể bật khử tạp âm.</p>
+    <div class="stage" id="recStage">
+      <video id="preview" autoplay muted playsinline></video>
+      <div class="bg" id="recBg" style="display:none">📷</div>
+      <div class="badge-cam rec-dot" id="recDot" style="display:none"><b></b> REC</div>
+      <div class="badge-cam timer" id="recTimer" style="display:none">30s</div>
+    </div>
+    <div class="switch"><input type="checkbox" id="denoise" checked><label style="margin:0">Khử tạp âm (nếu thiết bị hỗ trợ)</label></div>
+    <div id="recControls" style="margin-top:14px"><button class="btn" id="btnStartCam">Bật camera</button></div>
+    <input type="file" id="uploadVid" accept="video/*" style="display:none">
+    <p class="note">Không có camera? <a class="link" onclick="document.getElementById('uploadVid').click()">Tải video có sẵn</a> · hoặc <a class="link" onclick="skipVideo()">dùng thiệp tĩnh</a></p>
+  </section>
+
+  <!-- FILTER -->
+  <section class="screen" id="filter">
+    <h2>Chỉnh màu sắc</h2>
+    <p class="sub">Chọn tông màu &amp; độ sáng cho video.</p>
+    <div class="stage" id="filStage">
+      <video id="filVideo" autoplay muted loop playsinline></video>
+      <div class="bg" id="filBg" style="display:none">🎬</div>
+    </div>
+    <div class="chips" id="filterChips"></div>
+    <label>Độ sáng</label>
+    <input type="range" min="70" max="130" value="100" class="slider" id="brightSlider">
+    <div class="row" style="margin-top:16px">
+      <button class="btn ghost sm" onclick="go('record')">← Quay lại</button>
+      <button class="btn" onclick="go('decorate')">Tiếp →</button>
+    </div>
+  </section>
+
+  <!-- DECORATE -->
+  <section class="screen" id="decorate">
+    <h2>Nhãn dán động &amp; lời nhắn</h2>
+    <p class="sub">Chạm để thêm nhãn động, kéo để di chuyển (chạm 2 lần để xóa).</p>
+    <div class="stage" id="decStage">
+      <video id="decVideo" autoplay muted loop playsinline></video>
+      <div class="bg" id="decBg" style="display:none">🎬</div>
+      <div class="overlay" id="overlay"></div>
+      <div class="msg-on" id="msgOn"></div>
+    </div>
+    <div class="palette" id="palette"></div>
+    <label>Kiểu chuyển động</label>
+    <div class="chips" id="animChips"></div>
+    <label>Lời nhắn gửi gắm</label>
+    <input type="text" id="msgInput" maxlength="80" placeholder="Lời chúc của bạn...">
+    <div class="row" style="margin-top:16px">
+      <button class="btn ghost sm" onclick="go('filter')">← Quay lại</button>
+      <button class="btn" onclick="go('music')">Tiếp: nhạc nền →</button>
+    </div>
+  </section>
+
+  <!-- MUSIC -->
+  <section class="screen" id="music">
+    <h2>Nhạc nền</h2>
+    <p class="sub">Chọn giai điệu phù hợp (tổng hợp trong trình duyệt). Chạm để nghe thử.</p>
+    <div class="chips" id="musicChips" style="flex-direction:column"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn ghost sm" onclick="go('decorate')">← Quay lại</button>
+      <button class="btn" onclick="stopMusic();go('price')">Tiếp: chọn e-gift →</button>
+    </div>
+  </section>
+
+  <!-- PRICE -->
+  <section class="screen" id="price">
+    <h2 id="priceTitle">Giá trị e-gift</h2>
+    <p class="sub" id="priceSub">Người nhận có thể đổi thành bất kỳ quà nào trên Giftee hoặc quy đổi giá trị.</p>
+    <div class="tiers" id="tiers"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn ghost sm" onclick="go('music')">← Quay lại</button>
+      <button class="btn" id="btnToSend" disabled onclick="go('send')">Tiếp: gửi thiệp →</button>
+    </div>
+  </section>
+
+  <!-- SEND -->
+  <section class="screen" id="send">
+    <h2>Gửi thiệp</h2>
+    <p class="sub">Nhập thông tin người nhận.</p>
+    <div class="card" id="sendPreview"></div>
+    <label>Tên người nhận</label><input type="text" id="rcpName" placeholder="Vd: Minh Anh">
+    <label>Email người nhận (mô phỏng)</label><input type="email" id="rcpEmail" placeholder="minhanh@email.com">
+    <label>Từ (tên bạn)</label><input type="text" id="sndName" placeholder="Vd: Hữu Tài">
+    <button class="btn" style="margin-top:16px" onclick="sendCard()">📧 Gửi thiệp qua email →</button>
+    <div class="row" style="margin-top:10px"><button class="btn ghost sm" onclick="go('price')">← Quay lại</button></div>
+  </section>
+
+  <!-- SENT -->
+  <section class="screen" id="sent">
+    <div class="big-emoji">✅</div>
+    <h2 class="center">Đã gửi thiệp!</h2>
+    <p class="sub center">Email chứa liên kết thiệp đã gửi tới <b id="sentTo"></b>.</p>
+    <div class="card center">
+      <span class="pill">Liên kết thiệp (mô phỏng)</span>
+      <p class="muted" style="word-break:break-all;margin:10px 0" id="fakeLink"></p>
+      <button class="btn dark" onclick="openAsRecipient()">🔗 Mở thiệp dưới góc Người nhận →</button>
+    </div>
+    <p class="note">Sản phẩm thật: email/Zalo chứa link riêng, người nhận mở trên thiết bị của họ (cần backend lưu thiệp &amp; video). Demo mô phỏng bằng cách chuyển màn hình.</p>
+  </section>
+
+  <!-- RECIPIENT OPEN -->
+  <section class="screen" id="r-open">
+    <div class="center"><p class="sub" id="openHint">Bạn nhận được một tấm thiệp — chạm để mở 💌</p></div>
+    <div class="envelope" id="envelope" onclick="openCard()">
+      <div class="reveal-stage" id="revStage">
+        <video id="revVideo" loop playsinline></video>
+        <div class="bg" id="revBg" style="display:none">🎬</div>
+        <div class="overlay" id="revOverlay"></div>
+        <div class="msg-on" id="revMsg"></div>
+      </div>
+      <div class="env-card" id="envCard">
+        <div class="e" id="envEmoji">💌</div>
+        <div class="t" id="envTitle">Một tấm thiệp dành cho bạn</div>
+        <div class="h">Chạm để mở</div>
+      </div>
+    </div>
+    <div id="afterOpen" style="display:none">
+      <button class="btn" style="margin-top:8px" id="btnToRitual"></button>
+    </div>
+  </section>
+
+  <!-- RITUAL -->
+  <section class="screen" id="r-ritual">
+    <h2 class="center" id="ritualTitle"></h2>
+    <p class="sub center" id="ritualSub"></p>
+    <div id="ritualBody"></div>
+  </section>
+
+  <!-- GIFT / CODE -->
+  <section class="screen" id="r-gift">
+    <div class="center"><div class="big-emoji" id="giftEmoji">🎉</div><h2 id="giftHead"></h2>
+    <p class="sub" id="giftSub">Khoảnh khắc đã được lưu — và món quà đang chờ bạn.</p></div>
+    <canvas id="momentCanvas" width="800" height="1000" style="width:100%;border-radius:var(--r);border:1px solid var(--line);box-shadow:var(--shadow)"></canvas>
+    <div class="row" style="margin-top:12px">
+      <button class="btn ghost sm" onclick="downloadMoment()">💾 Lưu ảnh</button>
+      <button class="btn slate sm" onclick="sendBack()">↩️ Gửi lại người tặng</button>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <span class="pill" id="giftLabel">Quà e-gift của bạn</span>
+      <div class="center" style="font-size:2.4rem;margin:10px 0" id="giftIcon">🎁</div>
+      <div class="center" style="font-weight:700" id="giftValue"></div>
+      <p class="muted center" style="margin:4px 0 0" id="giftHow"></p>
+      <div class="codebox" id="codeBox" style="margin-top:14px" onclick="copyCode()"></div>
+      <p class="muted center" style="margin:8px 0 0">Chạm để sao chép mã</p>
+      <button class="btn" id="giftCTA" style="margin-top:14px" onclick="toGiftee()">🛍️ Dùng trên nền tảng Giftee →</button>
+    </div>
+    <button class="btn ghost" style="margin-top:14px" onclick="restart()">Tạo thiệp mới</button>
+  </section>
+
+</div>
+
+<button class="musicbtn" id="musicToggle" onclick="toggleMusic()">🔊</button>
+<canvas id="particles"></canvas>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ================= OCCASIONS ================= */
+const OCC = {
+  birthday:{name:"Sinh nhật",emoji:"🎂",desc:"Thổi nến & ước nguyện",accent:"#F08B71",deep:"#DE5F3E",wash:"#FDEEE8",
+    ritual:"blow",candles:5,music:"joy",filter:"bright",open:"Chúc mừng sinh nhật!",
+    stickers:["🎂","🎈","🎉","🥳","⭐","🎁","✨","🍰"],
+    rTitle:"Thổi nến & ước một điều 🎂",rSub:"Thổi vào micro để tắt nến — hoặc chạm nút.",solemn:false,
+    giftLabel:"Quà sinh nhật"},
+  wedding:{name:"Đám cưới",emoji:"💍",desc:"Nâng ly chúc phúc",accent:"#C98B6B",deep:"#A66A4C",wash:"#F6ECE4",
+    ritual:"toast",icon:"🥂",particle:"❤️",music:"warm",filter:"warm",open:"Chúc trăm năm hạnh phúc!",
+    stickers:["💍","💐","🕊️","❤️","🥂","✨","💒","🌹"],
+    rTitle:"Nâng ly chúc mừng 🥂",rSub:"Chạm để chạm ly chúc phúc đôi uyên ương.",solemn:false,
+    giftLabel:"Quà mừng cưới"},
+  thoinoi:{name:"Thôi nôi",emoji:"🧸",desc:"Bé tròn 1 tuổi",accent:"#E8A94B",deep:"#C4882C",wash:"#FBF0DC",
+    ritual:"blow",candles:1,music:"sweet",filter:"bright",open:"Mừng bé tròn 1 tuổi!",
+    stickers:["🧸","🎈","⭐","🍼","🎂","🌈","✨","🐣"],
+    rTitle:"Thổi ngọn nến đầu đời 🕯️",rSub:"Thổi vào micro để tắt nến — hoặc chạm nút.",solemn:false,
+    giftLabel:"Quà thôi nôi"},
+  daythang:{name:"Đầy tháng",emoji:"🍼",desc:"Mừng bé đầy tháng",accent:"#7FB0C9",deep:"#4E88A3",wash:"#E8F0F5",
+    ritual:"balloons",particle:"🎈",music:"sweet",filter:"bright",open:"Mừng bé đầy tháng!",
+    stickers:["🍼","🎈","☁️","⭐","🐤","🌸","✨","🧸"],
+    rTitle:"Thả bóng chúc phúc 🎈",rSub:"Chạm để thả bóng bay gửi lời chúc bình an.",solemn:false,
+    giftLabel:"Quà đầy tháng"},
+  tangia:{name:"Tân gia",emoji:"🏡",desc:"Mừng nhà mới",accent:"#6B8E7F",deep:"#4E6E60",wash:"#E9F0EC",
+    ritual:"lights",music:"warm",filter:"warm",open:"Mừng tân gia an cư!",
+    stickers:["🏡","🔑","🪴","🎉","✨","🛋️","🕯️","🌿"],
+    rTitle:"Thắp sáng ngôi nhà mới 🏡",rSub:"Chạm để thắp sáng từng ô cửa.",solemn:false,
+    giftLabel:"Quà tân gia"},
+  funeral:{name:"Chia buồn",emoji:"🕯️",desc:"Thành kính phân ưu",accent:"#6B7280",deep:"#4B5563",wash:"#EEF0F2",
+    ritual:"memorial",candles:3,music:"solemn",filter:"mono",open:"Thành kính phân ưu",
+    stickers:["🕯️","🤍","🕊️","🪷"],
+    rTitle:"Thắp nến tưởng niệm 🕯️",rSub:"Chạm nhẹ để thắp từng ngọn nến, gửi lời tiễn biệt.",solemn:true,
+    giftLabel:"Gửi lời chia buồn"},
+  cauan:{name:"Lễ cầu bình an",emoji:"🪷",desc:"Cầu an dịp Vu Lan / lễ chùa",accent:"#7C6BAA",deep:"#5E4E8A",wash:"#EEEAF6",
+    ritual:"blessing",music:"solemn",filter:"warm",open:"Nguyện cầu bình an &amp; sức khỏe cho người con thương",
+    stickers:["🪷","🕯️","🙏","☸️","🌸","📜"],service:true,
+    rTitle:"Dâng hương &amp; hồi hướng 🙏",rSub:"Chạm nhẹ để dâng hương, gửi lời nguyện cầu bình an.",solemn:true,
+    giftLabel:"Lễ vật cầu an"},
+  tarot:{name:"Xem Tarot",emoji:"🔮",desc:"Tặng một lượt bói bài vui",accent:"#6D5AA6",deep:"#4E3E82",wash:"#ECE8F7",
+    ritual:"tarot",music:"sweet",filter:"cinema",open:"Gửi bạn một lượt Tarot — chúc mọi điều lành!",
+    stickers:["🔮","✨","🌙","⭐","🃏","🕯️"],
+    rTitle:"Rút bài Tarot 🔮",rSub:"Tĩnh tâm, nghĩ về điều bạn muốn hỏi, rồi rút 3 lá.",solemn:false,
+    giftLabel:"Lượt trải nghiệm Tarot"},
+  photreo:{name:"Phở treo",emoji:"🍜",desc:"Treo suất ăn cho người cần",accent:"#E07B39",deep:"#C25E1E",wash:"#FBEDE0",
+    type:"community",music:"warm",filter:"warm",open:"Một suất ăn ấm lòng dành cho bạn",
+    giftLabel:"Suất ăn treo"},
+};
+const FILTERS={
+  bright:{n:"Tươi sáng",css:"brightness(1.08) saturate(1.28) contrast(1.03)"},
+  warm:{n:"Ấm áp",css:"sepia(.22) saturate(1.25) brightness(1.05)"},
+  vintage:{n:"Cổ điển",css:"sepia(.5) contrast(1.1) brightness(.98)"},
+  cinema:{n:"Điện ảnh",css:"contrast(1.18) brightness(.9) saturate(1.12)"},
+  mono:{n:"Đen trắng",css:"grayscale(1) contrast(1.05)"},
+  none:{n:"Gốc",css:"none"},
+};
+const ANIMS=[["none","Tĩnh"],["anim-float","Bay lên"],["anim-pulse","Nhịp đập"],["anim-spin","Xoay"],["anim-sway","Lắc lư"]];
+const PRICE_TIERS=[
+  {e:"🎟️",nm:"Dưới 100.000đ",d:"Cà phê, trà sữa, ăn vặt"},
+  {e:"🎁",nm:"100.000 – 300.000đ",d:"Vé phim, combo ăn uống"},
+  {e:"💝",nm:"300.000 – 500.000đ",d:"Nhà hàng, mỹ phẩm"},
+  {e:"💎",nm:"500.000đ – 1 triệu",d:"Thẻ mua sắm, spa"},
+  {e:"👑",nm:"Trên 1 triệu",d:"Quà cao cấp, du lịch"},
+];
+const MELODIES={
+  joy:{tempo:150,type:"triangle",gain:.05,seq:["C5","E5","G5","E5","F5","A5","G5","0","C5","E5","G5","C6"]},
+  warm:{tempo:92,type:"sine",gain:.06,seq:["C4","E4","G4","0","A4","G4","E4","0","F4","A4","C5","0"]},
+  sweet:{tempo:120,type:"sine",gain:.05,seq:["G5","E5","C5","E5","D5","0","E5","G5","E5","C5","0","0"]},
+  solemn:{tempo:56,type:"sine",gain:.04,seq:["A3","0","C4","0","E4","0","D4","0","C4","0","A3","0"]},
+};
+const NOTES={"A3":220,"C4":261.63,"D4":293.66,"E4":329.63,"F4":349.23,"G4":392,"A4":440,"C5":523.25,"D5":587.33,"E5":659.25,"F5":698.46,"G5":783.99,"A5":880,"C6":1046.5};
+
+/* ================= state ================= */
+const S={occ:null,videoURL:null,hasVideo:false,filter:"bright",bright:100,stickers:[],anim:"anim-float",
+  message:"",music:null,tier:null,rcpName:"",rcpEmail:"",sndName:"",code:""};
+const FLOW_STD=["occasion","record","filter","decorate","music","price","send","sent","r-open","r-ritual","r-gift"];
+const FLOW_SVC=["occasion","ceremony","ledger","send","sent","r-open","r-ritual","r-gift"];
+const FLOW_COM=["occasion","treo","board","claim-done"];
+const ALL_SCREENS=["home","occasion","record","filter","decorate","music","price","ceremony","ledger","treo","board","claim-done","send","sent","r-open","r-ritual","r-gift"];
+function curFlow(){const o=OCC[S.occ];if(!o)return FLOW_STD;if(o.type==="community")return FLOW_COM;if(o.service)return FLOW_SVC;return FLOW_STD;}
+function cfg(){return OCC[S.occ]||OCC.birthday;}
+function filterCss(){const b=S.bright/100;const base=FILTERS[S.filter].css;
+  return (base==="none"?"":base+" ")+"brightness("+b+")";}
+function applyTheme(){const c=cfg();document.documentElement.style.setProperty("--accent",c.accent);
+  document.documentElement.style.setProperty("--accent-deep",c.deep);
+  document.documentElement.style.setProperty("--accent-wash",c.wash);
+  document.getElementById("badge").textContent=c.emoji+" "+c.name;}
+
+function go(id){
+  ALL_SCREENS.forEach(s=>{const el=document.getElementById(s);if(el)el.classList.toggle("active",s===id);});
+  window.scrollTo({top:0,behavior:"smooth"}); renderProg(id);
+  if(id==="occasion")mountOcc();
+  if(id==="record")mountRecord();
+  if(id==="filter")mountFilter();
+  if(id==="decorate")mountDecorate();
+  if(id==="music")mountMusic();
+  if(id==="price")mountPrice();
+  if(id==="ceremony")mountCeremony();
+  if(id==="ledger")mountLedger();
+  if(id==="treo")mountTreo();
+  if(id==="board")mountBoard();
+  if(id==="send")mountSend();
+  if(id==="r-open")mountOpen();
+  if(id==="r-ritual")mountRitual();
+  if(id==="r-gift")mountGift();
+}
+function renderProg(id){const p=document.getElementById("prog");p.innerHTML="";
+  const F=curFlow();const i=F.indexOf(id);if(i<0){return;}
+  F.forEach((s,k)=>{const b=document.createElement("i");if(k<i)b.className="done";else if(k===i)b.className="on";p.appendChild(b);});}
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2000);}
+
+/* ============ OCCASION ============ */
+function selectOcc(k){const o=OCC[k];S.occ=k;S.filter=o.filter;S.music=o.music;applyTheme();
+  go(o.type==="community"?"treo":(o.service?"ceremony":"record"));}
+function mountOccShow(){const g=document.getElementById("occShow");if(!g||g.childElementCount)return;
+  Object.keys(OCC).forEach(k=>{const o=OCC[k];const b=document.createElement("button");
+    b.innerHTML=`<div class="e">${o.emoji}</div><div class="n">${o.name}</div>`;b.onclick=()=>selectOcc(k);g.appendChild(b);});}
+function mountOcc(){const g=document.getElementById("occGrid");if(g.childElementCount)return;
+  Object.keys(OCC).forEach(k=>{const o=OCC[k];const b=document.createElement("button");
+    b.innerHTML=`<div class="e">${o.emoji}</div><div class="n">${o.name}</div><div class="d">${o.desc}</div>`;
+    b.onclick=()=>selectOcc(k);g.appendChild(b);});}
+
+/* ============ CẦU AN (service) ============ */
+const CAUAN_PKGS=[
+  {e:"🕯️",nm:"Cầu an cơ bản",price:299000,d:"Sớ cầu an + hồi hướng công đức",items:["Sớ cầu an","Hồi hướng công đức"]},
+  {e:"🪷",nm:"Cầu an + lễ vật",price:599000,d:"Thêm hoa sen cúng dường & vòng charm bình an",items:["Sớ cầu an","Hoa sen cúng dường","Vòng charm bình an","Hồi hướng công đức"]},
+  {e:"☸️",nm:"Cầu an trọn gói",price:999000,d:"Thêm cơm chay, video buổi lễ & giấy chứng nhận",items:["Sớ cầu an","Hoa sen cúng dường","Vòng charm bình an","Phần cơm chay","Video buổi lễ","Giấy chứng nhận","Hồi hướng công đức"]},
+];
+const TEMPLES=["Chùa Vĩnh Nghiêm","Chùa Hoằng Pháp","Chùa Giác Lâm","Chùa Bái Đính","Chùa Ba Vàng"];
+const OCC_DATES=["Vu Lan (Rằm tháng 7)","Rằm tháng Giêng","Đầu năm mới","Giỗ / kỵ","Sinh nhật người thân"];
+function vnd(n){return n.toLocaleString("vi-VN")+"đ";}
+function mountCeremony(){
+  const pl=document.getElementById("pkgList");pl.innerHTML="";
+  CAUAN_PKGS.forEach(p=>{const d=document.createElement("div");d.className="tier"+(S.pkg&&S.pkg.nm===p.nm?" on":"");
+    d.innerHTML=`<span class="e">${p.e}</span><div><div class="nm">${p.nm} · ${vnd(p.price)}</div><div class="d">${p.d}</div></div>`;
+    d.onclick=()=>{pl.querySelectorAll(".tier").forEach(x=>x.classList.remove("on"));d.classList.add("on");S.pkg=p;checkCe();};pl.appendChild(d);});
+  const tc=document.getElementById("templeChips");tc.innerHTML="";
+  TEMPLES.forEach(t=>{const c=document.createElement("div");c.className="chip"+(S.temple===t?" on":"");c.textContent="🛕 "+t;
+    c.onclick=()=>{tc.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");S.temple=t;checkCe();};tc.appendChild(c);});
+  const dc=document.getElementById("occDateChips");dc.innerHTML="";
+  OCC_DATES.forEach((t,i)=>{const c=document.createElement("div");c.className="chip"+((S.occDate||OCC_DATES[0])===t?" on":"");c.textContent=t;
+    c.onclick=()=>{dc.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");S.occDate=t;};dc.appendChild(c);});
+  if(!S.occDate)S.occDate=OCC_DATES[0];
+  const mi=document.getElementById("ceMsg");mi.value=S.message;mi.oninput=e=>S.message=e.target.value;
+  checkCe();
+}
+function checkCe(){document.getElementById("btnToLedger").disabled=!(S.pkg&&S.temple);}
+function mountLedger(){
+  const p=S.pkg||CAUAN_PKGS[0];const total=p.price;
+  const temple=Math.round(total*0.70),goods=Math.round(total*0.20),plat=total-temple-goods;
+  document.getElementById("ledgerCard").innerHTML=`
+    <span class="pill">Sổ minh bạch · Đơn #${Math.random().toString(36).slice(2,8).toUpperCase()}</span>
+    <p style="margin:12px 0 6px"><b>${p.e} ${p.nm}</b> · ${S.temple||"—"}<br><span class="muted">Dịp: ${S.occDate||"—"}</span></p>
+    <div style="border-top:1px dashed var(--line);margin:10px 0;padding-top:10px">
+      <div style="display:flex;justify-content:space-between;padding:6px 0"><span>🛕 Chùa (thực hiện lễ)</span><b>${vnd(temple)} · 70%</b></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0"><span>🪷 Lễ vật &amp; giao nhận</span><b>${vnd(goods)} · 20%</b></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;color:var(--accent-deep)"><span>✳ Giftee (nền tảng)</span><b>${vnd(plat)} · 10%</b></div>
+      <div style="display:flex;justify-content:space-between;padding:10px 0 0;border-top:1px solid var(--line);margin-top:6px;font-weight:800"><span>Tổng</span><span>${vnd(total)}</span></div>
+    </div>
+    <div style="margin-top:6px;padding:10px 12px;background:var(--accent-wash);border-radius:10px;font-size:.85rem">
+      ✅ Phát hành phiếu lễ cho chùa &amp; tạo sổ đối soát — người nhận có mã tra cứu minh bạch.</div>`;
+}
+
+/* ============ PHỞ TREO (community / pay-it-forward) ============ */
+const DISHES=[["🍜","Phở bò",40000],["🍚","Cơm tấm",35000],["🥖","Bánh mì",25000],["🍲","Bún riêu",38000]];
+const SHOPS=["Quán Phở Hòa","Cơm tấm Ba Ghiền","Bánh mì cô Ba","Bún riêu Gánh"];
+const QTYS=[1,3,5,10];
+function poolGet(){try{return +(localStorage.getItem("photreo_pool")||"27");}catch(e){return 27;}}
+function poolSet(n){try{localStorage.setItem("photreo_pool",String(n));}catch(e){}}
+function mountTreo(){
+  const dc=document.getElementById("dishChips");dc.innerHTML="";
+  DISHES.forEach(d=>{const c=document.createElement("div");c.className="chip"+(S.dish&&S.dish[1]===d[1]?" on":"");c.textContent=d[0]+" "+d[1]+" ("+vnd(d[2])+")";
+    c.onclick=()=>{dc.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");S.dish=d;treoSum();};dc.appendChild(c);});
+  const qc=document.getElementById("qtyChips");qc.innerHTML="";
+  QTYS.forEach(q=>{const c=document.createElement("div");c.className="chip"+(S.qty===q?" on":"");c.textContent=q+" suất";
+    c.onclick=()=>{qc.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");S.qty=q;treoSum();};qc.appendChild(c);});
+  const sc=document.getElementById("shopChips");sc.innerHTML="";
+  SHOPS.forEach(s=>{const c=document.createElement("div");c.className="chip"+(S.shop===s?" on":"");c.textContent="🏪 "+s;
+    c.onclick=()=>{sc.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");S.shop=s;treoSum();};sc.appendChild(c);});
+  const mi=document.getElementById("treoMsg");mi.value=S.message;mi.oninput=e=>S.message=e.target.value;
+  treoSum();
+}
+function treoSum(){const ok=S.dish&&S.qty&&S.shop;document.getElementById("btnTreo").disabled=!ok;
+  const el=document.getElementById("treoSummary");
+  if(!ok){el.innerHTML='<span class="muted">Chọn món, số suất &amp; quán để xem tổng.</span>';return;}
+  const total=S.dish[2]*S.qty,plat=Math.round(total*0.05);
+  el.innerHTML=`<b>${S.dish[0]} ${S.dish[1]} × ${S.qty} suất</b> tại ${S.shop}
+    <div style="display:flex;justify-content:space-between;margin-top:8px"><span>Tới quán (suất ăn)</span><b>${vnd(total-plat)}</b></div>
+    <div style="display:flex;justify-content:space-between;color:var(--accent-deep)"><span>✳ Giftee vận hành nền tảng</span><b>${vnd(plat)} · 5%</b></div>
+    <div style="display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:6px;padding-top:6px;font-weight:800"><span>Tổng treo</span><span>${vnd(total)}</span></div>`;
+}
+function doTreo(){poolSet(poolGet()+S.qty);toast("💛 Đã treo "+S.qty+" suất ăn!");go("board");}
+function mountBoard(){const pool=poolGet();
+  document.getElementById("boardSub").textContent="Đang có "+pool+" suất ăn được treo, chờ người cần.";
+  const entries=[["Bạn (vừa treo)",S.qty||1,S.dish?S.dish[1]:"Phở bò"],["Anh Minh","3","Cơm tấm"],["Chị Lan","5","Bánh mì"],["Nhóm thiện nguyện","10","Phở bò"]];
+  document.getElementById("boardCard").innerHTML='<span class="pill">Sổ minh bạch cộng đồng</span>'+
+    entries.map(e=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span>🍜 ${e[0]}</span><b>${e[1]} suất · ${e[2]}</b></div>`).join("")+
+    '<p class="muted" style="margin-top:10px">Mỗi suất được ghi sổ minh bạch: ai treo, ai nhận, còn lại bao nhiêu — Giftee đảm bảo suất ăn đến đúng người cần.</p>';
+}
+function doClaim(){let pool=poolGet();if(pool<=0){toast("Hiện chưa còn suất nào — hãy quay lại sau nhé");return;}
+  pool--;poolSet(pool);const dish=S.dish||DISHES[0],shop=S.shop||SHOPS[0];
+  document.getElementById("claimShop").textContent=dish[0];
+  document.getElementById("claimDish").textContent=dish[1]+" · "+shop;
+  document.getElementById("claimCode").textContent="PHO-"+genCode().slice(4);
+  document.getElementById("claimMsg").textContent='💛 "'+(S.message||"Chúc bạn một ngày ấm lòng nhé!")+'" — từ một người ẩn danh';
+  document.getElementById("claimLedger").innerHTML='<span class="pill">Minh bạch</span><p style="margin:10px 0 0">Bạn vừa nhận 1 suất. Cộng đồng còn <b>'+pool+' suất</b> đang treo. Cảm ơn tấm lòng của những người đã treo. 🤍</p>';
+  go("claim-done");}
+function copyClaim(){const c=document.getElementById("claimCode").textContent;navigator.clipboard?.writeText(c).then(()=>toast("Đã sao chép: "+c)).catch(()=>toast("Mã: "+c));}
+
+/* ============ RECORD ============ */
+let camStream=null,mediaRec=null,chunks=[],recInt=null;
+function mountRecord(){document.getElementById("recTitle").textContent="Quay video — "+cfg().name;
+  const c=document.getElementById("recControls");
+  document.getElementById("btnStartCam").onclick=startCam;
+}
+document.getElementById("uploadVid").onchange=e=>{const f=e.target.files[0];if(!f)return;
+  S.videoURL=URL.createObjectURL(f);S.hasVideo=true;showRecorded();toast("Đã tải video");};
+async function startCam(){
+  try{
+    const denoise=document.getElementById("denoise").checked;
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},
+      audio:{noiseSuppression:denoise,echoCancellation:denoise,autoGainControl:true}});
+    const v=document.getElementById("preview");v.srcObject=camStream;v.muted=true;v.style.filter=filterCss();
+    document.getElementById("recBg").style.display="none";
+    document.getElementById("recControls").innerHTML='<button class="btn" id="btnRec">● Bắt đầu quay (30s)</button>';
+    document.getElementById("btnRec").onclick=startRec;
+  }catch(err){
+    document.getElementById("recBg").style.display="flex";document.getElementById("recBg").textContent="🚫";
+    toast("Không truy cập được camera");
+    document.getElementById("recControls").innerHTML=
+      '<button class="btn ghost" onclick="document.getElementById(\'uploadVid\').click()">Tải video có sẵn</button>'+
+      '<button class="btn" style="margin-top:8px" onclick="skipVideo()">Dùng thiệp tĩnh →</button>';
+  }
+}
+function startRec(){chunks=[];try{mediaRec=new MediaRecorder(camStream);}catch(e){toast("Không hỗ trợ quay");return;}
+  mediaRec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  mediaRec.onstop=()=>{const b=new Blob(chunks,{type:"video/webm"});S.videoURL=URL.createObjectURL(b);S.hasVideo=true;showRecorded();};
+  mediaRec.start();
+  document.getElementById("recDot").style.display="flex";document.getElementById("recTimer").style.display="block";
+  document.getElementById("btnRec").disabled=true;let t=30;document.getElementById("recTimer").textContent=t+"s";
+  recInt=setInterval(()=>{t--;document.getElementById("recTimer").textContent=t+"s";if(t<=0)stopRec();},1000);}
+function stopRec(){clearInterval(recInt);document.getElementById("recDot").style.display="none";
+  document.getElementById("recTimer").style.display="none";if(mediaRec&&mediaRec.state!=="inactive")mediaRec.stop();}
+function showRecorded(){if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  const v=document.getElementById("preview");v.srcObject=null;v.src=S.videoURL;v.muted=true;v.loop=true;v.style.filter=filterCss();v.play();
+  document.getElementById("recBg").style.display="none";
+  document.getElementById("recControls").innerHTML=
+    '<div class="row"><button class="btn ghost sm" onclick="retake()">↺ Quay lại</button>'+
+    '<button class="btn" onclick="go(\'filter\')">Tiếp: chỉnh màu →</button></div>';}
+function retake(){S.hasVideo=false;S.videoURL=null;
+  document.getElementById("recControls").innerHTML='<button class="btn" id="btnStartCam2">Bật camera</button>';
+  document.getElementById("btnStartCam2").onclick=startCam;startCam();}
+function skipVideo(){S.hasVideo=false;S.videoURL=null;go("filter");}
+
+/* ============ FILTER ============ */
+function mountFilter(){
+  const v=document.getElementById("filVideo"),bg=document.getElementById("filBg");
+  if(S.hasVideo){v.style.display="block";v.src=S.videoURL;v.play();bg.style.display="none";}
+  else{v.style.display="none";bg.style.display="flex";bg.textContent=cfg().emoji;document.getElementById("filStage").style.background=cfg().accent;}
+  const chips=document.getElementById("filterChips");chips.innerHTML="";
+  Object.keys(FILTERS).forEach(k=>{const c=document.createElement("div");c.className="chip"+(k===S.filter?" on":"");
+    c.textContent=FILTERS[k].n;c.onclick=()=>{S.filter=k;chips.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
+      c.classList.add("on");applyFil();};chips.appendChild(c);});
+  const sl=document.getElementById("brightSlider");sl.value=S.bright;sl.oninput=e=>{S.bright=+e.target.value;applyFil();};
+  applyFil();
+}
+function applyFil(){const f=filterCss();["filVideo","decVideo","preview","revVideo"].forEach(id=>{const e=document.getElementById(id);if(e)e.style.filter=f;});
+  const bg=document.getElementById("filBg");if(bg)bg.style.filter=f;}
+
+/* ============ DECORATE ============ */
+function mountDecorate(){
+  const v=document.getElementById("decVideo"),bg=document.getElementById("decBg");
+  if(S.hasVideo){v.style.display="block";v.src=S.videoURL;v.style.filter=filterCss();v.play();bg.style.display="none";}
+  else{v.style.display="none";bg.style.display="flex";bg.textContent=cfg().emoji;document.getElementById("decStage").style.background=cfg().accent;}
+  const pal=document.getElementById("palette");pal.innerHTML="";
+  cfg().stickers.forEach(s=>{const b=document.createElement("button");b.textContent=s;b.onclick=()=>addSticker(s);pal.appendChild(b);});
+  const ac=document.getElementById("animChips");ac.innerHTML="";
+  ANIMS.forEach(([cls,nm])=>{const c=document.createElement("div");c.className="chip"+(cls===S.anim?" on":"");c.textContent=nm;
+    c.onclick=()=>{S.anim=cls;ac.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");
+      document.querySelectorAll("#overlay .sticker").forEach(el=>{el.className="sticker "+(cls==="none"?"":cls);});};ac.appendChild(c);});
+  const mi=document.getElementById("msgInput");mi.value=S.message;mi.placeholder=cfg().open;
+  mi.oninput=e=>{S.message=e.target.value;document.getElementById("msgOn").textContent=e.target.value;};
+  document.getElementById("msgOn").textContent=S.message;
+}
+function addSticker(emoji){const ov=document.getElementById("overlay");const el=document.createElement("div");
+  el.className="sticker "+(S.anim==="none"?"":S.anim);el.textContent=emoji;el.style.left="42%";el.style.top="40%";
+  makeDraggable(el,ov);ov.appendChild(el);S.stickers.push({emoji,el});
+  el.ondblclick=()=>{el.remove();S.stickers=S.stickers.filter(s=>s.el!==el);};}
+function makeDraggable(el,parent){let ox,oy;
+  const down=e=>{e.preventDefault();const r=el.getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;
+    document.addEventListener("pointermove",move);document.addEventListener("pointerup",up);};
+  const move=e=>{const pr=parent.getBoundingClientRect();let x=e.clientX-pr.left-ox,y=e.clientY-pr.top-oy;
+    x=Math.max(-10,Math.min(pr.width-34,x));y=Math.max(-10,Math.min(pr.height-34,y));el.style.left=x+"px";el.style.top=y+"px";};
+  const up=()=>{document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",up);};
+  el.addEventListener("pointerdown",down);}
+
+/* ============ MUSIC (Web Audio synth) ============ */
+let mCtx=null,mTimer=null,mStep=0,musicOn=false,currentPreview=null;
+function mountMusic(){
+  const box=document.getElementById("musicChips");box.innerHTML="";
+  const opts=[["joy","Vui tươi rộn ràng"],["warm","Ấm áp ngọt ngào"],["sweet","Nhẹ nhàng đáng yêu"],["solemn","Trang nghiêm sâu lắng"],["none","Không nhạc"]];
+  opts.forEach(([k,nm])=>{const c=document.createElement("div");c.className="chip"+((S.music===k||(k==="none"&&!S.music))?" on":"");
+    c.textContent="🎵 "+nm;c.onclick=()=>{S.music=(k==="none"?null:k);box.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");
+      stopMusic();if(S.music)playMusic(S.music);};box.appendChild(c);});
+}
+function ensureCtx(){if(!mCtx)mCtx=new (window.AudioContext||window.webkitAudioContext)();if(mCtx.state==="suspended")mCtx.resume();}
+function playMusic(mood){if(!mood)return;ensureCtx();const M=MELODIES[mood];if(!M)return;musicOn=true;mStep=0;
+  document.getElementById("musicToggle").style.display="flex";document.getElementById("musicToggle").textContent="🔊";
+  const beat=60/M.tempo*1000;
+  const tick=()=>{const n=M.seq[mStep%M.seq.length];mStep++;
+    if(n!=="0"&&NOTES[n]){const o=mCtx.createOscillator(),g=mCtx.createGain();o.type=M.type;o.frequency.value=NOTES[n];
+      g.gain.setValueAtTime(0,mCtx.currentTime);g.gain.linearRampToValueAtTime(M.gain,mCtx.currentTime+.03);
+      g.gain.exponentialRampToValueAtTime(.0001,mCtx.currentTime+beat/1000*.9);
+      o.connect(g);g.connect(mCtx.destination);o.start();o.stop(mCtx.currentTime+beat/1000);}
+  };
+  tick();mTimer=setInterval(tick,beat);}
+function stopMusic(){musicOn=false;if(mTimer)clearInterval(mTimer);mTimer=null;}
+function toggleMusic(){if(musicOn){stopMusic();document.getElementById("musicToggle").textContent="🔇";}
+  else if(S.music){playMusic(S.music);}}
+
+/* ============ PRICE ============ */
+function mountPrice(){const c=cfg();
+  if(c.solemn){document.getElementById("priceTitle").textContent="Gửi lời chia buồn kèm phúng viếng";
+    document.getElementById("priceSub").textContent="Giá trị được chuyển tới gia quyến, có thể quy đổi tiền mặt — trang trọng và kín đáo.";}
+  else{document.getElementById("priceTitle").textContent="Giá trị e-gift";
+    document.getElementById("priceSub").textContent="Người nhận có thể đổi thành bất kỳ quà nào trên Giftee hoặc quy đổi giá trị.";}
+  const box=document.getElementById("tiers");box.innerHTML="";
+  PRICE_TIERS.forEach(t=>{const d=document.createElement("div");d.className="tier"+(S.tier&&S.tier.nm===t.nm?" on":"");
+    d.innerHTML=`<span class="e">${t.e}</span><div><div class="nm">${t.nm}</div><div class="d">${t.d}</div></div>`;
+    d.onclick=()=>{box.querySelectorAll(".tier").forEach(x=>x.classList.remove("on"));d.classList.add("on");
+      S.tier=t;document.getElementById("btnToSend").disabled=false;};box.appendChild(d);});
+}
+
+/* ============ SEND ============ */
+function mountSend(){const c=cfg();
+  if(c.service){const p=S.pkg||CAUAN_PKGS[0];
+    document.getElementById("sendPreview").innerHTML=`<span class="pill">${c.emoji} ${c.name}</span>
+      <div style="aspect-ratio:3/4;border-radius:12px;background:linear-gradient(160deg,${c.accent},${c.deep});display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff">
+        <div style="font-size:4rem">🪷</div><div style="font-weight:700;margin-top:8px">${S.temple||""}</div><div style="font-size:.85rem;opacity:.9">${S.occDate||""}</div></div>
+      <p style="font-weight:700;margin:12px 0 4px">${S.message||c.open}</p>
+      <div style="margin-top:10px;padding:12px;background:var(--accent-wash);border-radius:12px">🪷 <b>${p.e} ${p.nm}</b> · ${vnd(p.price)}</div>`;
+    return;}
+  const media=S.hasVideo
+    ? `<video src="${S.videoURL}" autoplay loop muted playsinline style="width:100%;border-radius:12px;filter:${filterCss()}"></video>`
+    : `<div style="aspect-ratio:3/4;border-radius:12px;background:${c.accent};display:flex;align-items:center;justify-content:center;font-size:4rem">${c.emoji}</div>`;
+  document.getElementById("sendPreview").innerHTML=`<span class="pill">${c.emoji} ${c.name}</span>${media}
+    <p style="font-weight:700;margin:12px 0 4px">${S.message||c.open}</p>
+    <p class="muted">Nhãn động: ${S.stickers.map(s=>s.emoji).join(" ")||"—"} · Nhạc: ${S.music?"🎵":"—"} · Màu: ${FILTERS[S.filter].n}</p>
+    <div style="margin-top:10px;padding:12px;background:var(--accent-wash);border-radius:12px">🎁 <b>${c.giftLabel}:</b> ${S.tier?S.tier.e+" "+S.tier.nm:"chưa chọn"}</div>`;
+}
+function sendCard(){S.rcpName=(document.getElementById("rcpName").value.trim()||"Người nhận");
+  S.rcpEmail=(document.getElementById("rcpEmail").value.trim()||"nguoinhan@email.com");
+  S.sndName=(document.getElementById("sndName").value.trim()||"Một người thân");S.code=genCode();
+  document.getElementById("sentTo").textContent=S.rcpName+" ("+S.rcpEmail+")";
+  document.getElementById("fakeLink").textContent="https://giftee.demo/thiep/"+Math.random().toString(36).slice(2,10);
+  go("sent");}
+function genCode(){const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let c="GFT-";for(let i=0;i<8;i++){c+=a[Math.floor(Math.random()*a.length)];if(i===3)c+="-";}return c;}
+function openAsRecipient(){document.getElementById("badge").textContent="🎁 Người nhận";go("r-open");}
+
+/* ============ RECIPIENT OPEN ============ */
+function mountOpen(){const c=cfg();
+  document.getElementById("envEmoji").textContent=c.emoji;
+  document.getElementById("envTitle").textContent=c.service?"Lời nguyện cầu bình an gửi đến bạn":(c.solemn?"Một lời nhắn gửi đến bạn":"Một tấm thiệp dành cho bạn");
+  document.getElementById("openHint").textContent="Từ "+(S.sndName||"một người thân")+" — chạm để mở 💌";
+  document.getElementById("envelope").classList.remove("open");
+  document.getElementById("afterOpen").style.display="none";
+  const rv=document.getElementById("revVideo"),rb=document.getElementById("revBg");
+  if(S.hasVideo){rv.style.display="block";rv.src=S.videoURL;rv.style.filter=filterCss();rb.style.display="none";}
+  else{rv.style.display="none";rb.style.display="flex";rb.textContent=c.emoji;document.getElementById("revStage").style.background=c.accent;}
+  const ov=document.getElementById("revOverlay");ov.innerHTML="";
+  S.stickers.forEach(s=>{const e=document.createElement("div");e.className=s.el.className;e.style.cursor="default";
+    e.textContent=s.emoji;e.style.left=s.el.style.left;e.style.top=s.el.style.top;ov.appendChild(e);});
+  if(c.service){document.getElementById("revMsg").innerHTML=(S.message||c.open)+"<br><span style='font-size:.85rem;opacity:.92'>🛕 "+(S.temple||"")+" · "+(S.occDate||"")+"</span>";}
+  else{document.getElementById("revMsg").textContent=S.message||c.open;}
+}
+function openCard(){const env=document.getElementById("envelope");if(env.classList.contains("open"))return;
+  env.classList.add("open");if(S.music)playMusic(S.music);
+  const rv=document.getElementById("revVideo");if(S.hasVideo){rv.muted=false;setTimeout(()=>rv.play().catch(()=>{rv.muted=true;rv.play();}),700);}
+  setTimeout(()=>{const c=cfg();const btn=document.getElementById("btnToRitual");
+    btn.textContent=c.rTitle+" →";
+    btn.onclick=()=>go("r-ritual");document.getElementById("afterOpen").style.display="block";
+    window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});},1400);}
+
+/* ============ RITUAL ============ */
+function mountRitual(){const c=cfg();
+  document.getElementById("ritualTitle").textContent=c.rTitle;
+  document.getElementById("ritualSub").textContent=c.rSub;
+  const body=document.getElementById("ritualBody");body.innerHTML="";
+  if(c.ritual==="blow"||c.ritual==="memorial")buildCake(body,c);
+  else if(c.ritual==="toast")buildTap(body,c,"🥂","Chạm ly!");
+  else if(c.ritual==="balloons")buildTap(body,c,"🎈","Thả bóng!");
+  else if(c.ritual==="lights")buildLights(body,c);
+  else if(c.ritual==="blessing")buildBlessing(body,c);
+  else if(c.ritual==="tarot")buildTarot(body,c);
+}
+/* --- cake (blow / memorial) --- */
+let candlesLeft=0;
+function buildCake(body,c){
+  const N=c.candles||5;candlesLeft=N;const memorial=c.ritual==="memorial";
+  const wrap=document.createElement("div");wrap.className="ritual-wrap";
+  const cake=document.createElement("div");cake.className="cake";
+  cake.innerHTML='<div class="plate"></div><div class="tierc t1"></div><div class="frost f1"></div><div class="tierc t2"></div><div class="frost f2"></div>';
+  const pos=N===1?[50]:N===3?[36,50,64]:[30,42,50,58,70];
+  for(let i=0;i<N;i++){const cd=document.createElement("div");cd.className="candle"+(memorial?"":"");
+    cd.style.left=pos[i]+"%";
+    cd.innerHTML=memorial?'<div class="flame memorial-flame"></div>':'<div class="flame"></div><div class="smoke">💨</div>';
+    if(memorial){cd.classList.remove("lit");}else{}
+    cake.appendChild(cd);}
+  wrap.appendChild(cake);body.appendChild(wrap);
+  if(memorial){
+    // light candles by tapping
+    const status=document.createElement("p");status.className="muted center";status.id="cStatus";status.textContent="Chạm nhẹ để thắp "+N+" ngọn nến";
+    body.appendChild(status);
+    let lit=0;
+    cake.onclick=()=>{const dark=[...cake.querySelectorAll(".candle:not(.lit)")];if(!dark.length)return;
+      dark[0].classList.add("lit");lit++;status.textContent=lit>=N?"🤍 Xin thành kính tiễn biệt — một phút mặc niệm...":"Đã thắp "+lit+"/"+N+" ngọn nến";
+      if(lit>=N){setTimeout(()=>finishRitual(),2600);}};
+    const b=document.createElement("button");b.className="btn slate";b.style.marginTop="10px";b.textContent="🕯️ Thắp nến (chạm)";
+    b.onclick=()=>cake.click();body.appendChild(b);
+  }else{
+    const meter=document.createElement("div");meter.className="meter";meter.innerHTML='<i id="micBar"></i>';body.appendChild(meter);
+    const status=document.createElement("p");status.className="muted center";status.id="cStatus";status.textContent="Còn "+N+" ngọn nến";body.appendChild(status);
+    const row=document.createElement("div");row.className="row";row.style.marginTop="12px";
+    row.innerHTML='<button class="btn slate sm" id="btnMic">🎤 Bật micro để thổi</button><button class="btn ghost sm" id="btnBlow">💨 Thổi (chạm)</button>';
+    body.appendChild(row);
+    document.getElementById("btnMic").onclick=startMic;
+    document.getElementById("btnBlow").onclick=blowOne;
+  }
+}
+function blowOne(){const lit=[...document.querySelectorAll(".candle:not(.out)")];if(!lit.length)return;
+  lit[0].classList.add("out");candlesLeft--;const st=document.getElementById("cStatus");
+  if(st)st.textContent=candlesLeft>0?("Còn "+candlesLeft+" ngọn nến — thổi tiếp!"):"Đã tắt hết nến! 🎉";
+  if(candlesLeft<=0){setTimeout(()=>finishRitual(),600);}}
+let audioCtx=null,micStream=null,rafId=null;
+async function startMic(){try{micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+  audioCtx=new (window.AudioContext||window.webkitAudioContext)();const src=audioCtx.createMediaStreamSource(micStream);
+  const an=audioCtx.createAnalyser();an.fftSize=512;src.connect(an);const data=new Uint8Array(an.fftSize);
+  const mb=document.getElementById("btnMic");if(mb)mb.textContent="🎤 Đang nghe... thổi đi!";let loud=0;
+  const loop=()=>{an.getByteTimeDomainData(data);let sum=0;for(let i=0;i<data.length;i++){const v=(data[i]-128)/128;sum+=v*v;}
+    const rms=Math.sqrt(sum/data.length);const bar=document.getElementById("micBar");if(bar)bar.style.width=Math.min(100,Math.round(rms*260))+"%";
+    if(rms>0.16){loud++;if(loud>=3){blowOne();loud=0;}}else loud=0;
+    if(candlesLeft>0)rafId=requestAnimationFrame(loop);else stopMic();};loop();
+}catch(e){toast("Không dùng được micro — hãy chạm 💨 Thổi");}}
+function stopMic(){if(rafId)cancelAnimationFrame(rafId);if(micStream)micStream.getTracks().forEach(t=>t.stop());
+  if(audioCtx)audioCtx.close().catch(()=>{});micStream=null;audioCtx=null;}
+/* --- tap rituals (toast / balloons) --- */
+function buildTap(body,c,icon,label){let count=0;const need=6;
+  const scene=document.createElement("div");scene.className="toast-scene center";scene.textContent=icon;
+  const st=document.createElement("p");st.className="muted center";st.textContent="Chạm "+need+" lần để "+label.toLowerCase();
+  scene.onclick=()=>{count++;spawnParticle(c.particle||"🎉");scene.style.transform="scale(1.15)";setTimeout(()=>scene.style.transform="",120);
+    st.textContent=count>=need?"🎉 Chúc mừng!":label+" ("+count+"/"+need+")";if(count>=need){burst(2000,c);setTimeout(()=>finishRitual(),1000);}};
+  body.appendChild(scene);body.appendChild(st);
+  const b=document.createElement("button");b.className="btn";b.style.marginTop="6px";b.textContent=icon+" "+label;
+  b.onclick=()=>scene.click();body.appendChild(b);}
+/* --- lights (tan gia) --- */
+function buildLights(body,c){const N=6;let on=0;
+  const wrap=document.createElement("div");wrap.className="center";wrap.style.fontSize="4.6rem";wrap.style.margin="20px 0";wrap.textContent="🏠";
+  const grid=document.createElement("div");grid.style.cssText="display:grid;grid-template-columns:repeat(3,44px);gap:10px;justify-content:center;margin:16px 0";
+  const wins=[];for(let i=0;i<N;i++){const w=document.createElement("div");w.style.cssText="width:44px;height:44px;border-radius:8px;background:#3a3a3a;border:1px solid #555;cursor:pointer;transition:.3s;font-size:1.5rem;display:flex;align-items:center;justify-content:center";
+    w.onclick=()=>{if(w.dataset.on)return;w.dataset.on=1;w.style.background="#FFE9A8";w.style.boxShadow="0 0 16px #ffd76b";w.textContent="💡";on++;
+      st.textContent=on>=N?"🏡 Nhà mới rực sáng — an cư lạc nghiệp!":"Đã thắp "+on+"/"+N+" ô cửa";if(on>=N){burst(1800,c);setTimeout(()=>finishRitual(),900);}};
+    wins.push(w);grid.appendChild(w);}
+  const st=document.createElement("p");st.className="muted center";st.textContent="Chạm để thắp sáng từng ô cửa sổ";
+  body.appendChild(wrap);body.appendChild(grid);body.appendChild(st);
+  const b=document.createElement("button");b.className="btn";b.style.marginTop="8px";b.textContent="💡 Thắp sáng ngẫu nhiên";
+  b.onclick=()=>{const off=wins.filter(w=>!w.dataset.on);if(off.length)off[0].click();};body.appendChild(b);}
+function buildBlessing(body,c){
+  const N=3;let lit=0;
+  const wrap=document.createElement("div");wrap.className="ritual-wrap";
+  const altar=document.createElement("div");altar.style.cssText="font-size:4.6rem;text-align:center;margin:14px 0 2px;cursor:pointer";altar.textContent="🪷";
+  const sticks=document.createElement("div");sticks.style.cssText="display:flex;gap:18px;justify-content:center;margin:8px 0;font-size:2rem;cursor:pointer";
+  const arr=[];for(let i=0;i<N;i++){const s=document.createElement("span");s.textContent="🕯️";s.style.cssText="opacity:.32;filter:grayscale(1);transition:.3s";arr.push(s);sticks.appendChild(s);}
+  wrap.appendChild(altar);wrap.appendChild(sticks);body.appendChild(wrap);
+  const st=document.createElement("p");st.className="muted center";st.textContent="Chạm nhẹ để dâng "+N+" nén hương";body.appendChild(st);
+  const light=()=>{if(lit>=N)return;arr[lit].style.opacity="1";arr[lit].style.filter="none";lit++;
+    st.textContent=lit>=N?"🙏 Xin hồi hướng công đức — nguyện cầu bình an, mạnh khỏe...":"Đã dâng "+lit+"/"+N+" nén hương";
+    if(lit>=N)setTimeout(()=>finishRitual(),2600);};
+  altar.onclick=light;sticks.onclick=light;
+  const b=document.createElement("button");b.className="btn slate";b.style.marginTop="10px";b.textContent="🙏 Dâng hương (chạm)";b.onclick=light;body.appendChild(b);
+}
+const TAROT=[
+  {e:"☀️",n:"Mặt Trời",m:"Niềm vui, thành công và năng lượng tích cực đang tới."},
+  {e:"🌟",n:"Ngôi Sao",m:"Hy vọng và cảm hứng — hãy tin vào điều tốt đẹp."},
+  {e:"🎡",n:"Bánh Xe May Mắn",m:"Vận may đang xoay chuyển theo hướng có lợi cho bạn."},
+  {e:"💕",n:"Tình Nhân",m:"Kết nối, hòa hợp và những lựa chọn từ trái tim."},
+  {e:"🦁",n:"Sức Mạnh",m:"Bạn có đủ nội lực và sự dịu dàng để vượt qua."},
+  {e:"🌙",n:"Mặt Trăng",m:"Hãy lắng nghe trực giác — mọi thứ sẽ dần sáng tỏ."},
+  {e:"🌍",n:"Thế Giới",m:"Một chu kỳ hoàn thành trọn vẹn, thành tựu đang chờ."},
+  {e:"🎩",n:"Nhà Ảo Thuật",m:"Bạn có mọi công cụ để biến ý tưởng thành hiện thực."},
+  {e:"🌱",n:"Nữ Hoàng",m:"Sung túc, sáng tạo và sự chăm sóc đang nở rộ."},
+  {e:"🕊️",n:"Điều Độ",m:"Cân bằng và kiên nhẫn mang lại bình an trong tâm."},
+];
+function buildTarot(body,c){
+  const POS=["Quá khứ","Hiện tại","Tương lai"];
+  const wrap=document.createElement("div");wrap.style.cssText="display:flex;gap:10px;justify-content:center;margin:18px 0";
+  const cards=[];
+  for(let i=0;i<3;i++){const card=document.createElement("div");
+    card.style.cssText="flex:1;max-width:110px;aspect-ratio:2/3;border-radius:12px;background:linear-gradient(160deg,"+c.accent+","+c.deep+");display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;box-shadow:var(--shadow);transition:transform .35s;font-size:2rem";
+    card.textContent="🔮";cards.push(card);wrap.appendChild(card);}
+  body.appendChild(wrap);
+  const labels=document.createElement("div");labels.style.cssText="display:flex;gap:10px;justify-content:center;font-size:.74rem;color:var(--muted)";
+  POS.forEach(p=>{const s=document.createElement("div");s.style.cssText="flex:1;max-width:110px;text-align:center";s.textContent=p;labels.appendChild(s);});
+  body.appendChild(labels);
+  const readings=document.createElement("div");readings.style.marginTop="14px";body.appendChild(readings);
+  const btn=document.createElement("button");btn.className="btn";btn.style.marginTop="14px";btn.textContent="🔮 Xáo &amp; rút 3 lá";body.appendChild(btn);
+  const note=document.createElement("p");note.className="note";note.innerHTML="🔮 Tarot ở đây mang tính giải trí &amp; gửi lời chúc tích cực, không phải lời tiên tri.";body.appendChild(note);
+  let drawn=false;
+  btn.onclick=()=>{if(drawn){go("r-gift");return;}drawn=true;
+    const deck=[...TAROT].sort(()=>Math.random()-.5).slice(0,3);
+    cards.forEach((card,i)=>{setTimeout(()=>{card.style.transform="scale(1.06) rotate(3deg)";
+      setTimeout(()=>{card.style.transform="";card.innerHTML='<div style="font-size:2.4rem">'+deck[i].e+'</div><div style="font-size:.66rem;padding:0 4px;margin-top:4px;text-align:center">'+deck[i].n+'</div>';},180);
+      const r=document.createElement("div");r.style.cssText="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0;font-size:.9rem;animation:fade .4s ease";
+      r.innerHTML='<b>'+POS[i]+' · '+deck[i].e+' '+deck[i].n+'</b><br><span class="muted">'+deck[i].m+'</span>';readings.appendChild(r);
+    },i*550);});
+    setTimeout(()=>{btn.textContent="Xem quà của bạn →";toast("🔮 Chúc bạn nhiều điều lành!");},2000);
+  };
+}
+function finishRitual(){stopMic();const c=cfg();if(!c.solemn)burst(2200,c);setTimeout(()=>go("r-gift"),700);}
+
+/* ============ GIFT / CODE ============ */
+function mountGift(){const c=cfg();const cta=document.getElementById("giftCTA");
+  if(c.service){const p=S.pkg||CAUAN_PKGS[0];
+    document.getElementById("giftEmoji").textContent="🙏";
+    document.getElementById("giftHead").textContent="Lễ cầu an đã viên mãn 🙏";
+    document.getElementById("giftSub").textContent="Minh chứng buổi lễ & lễ vật đã đến tay người nhận.";
+    drawMoment();
+    document.getElementById("giftLabel").textContent="Lễ vật cầu an đã giao";
+    document.getElementById("giftIcon").textContent=p.e;
+    document.getElementById("giftValue").textContent=p.nm+" · "+vnd(p.price);
+    document.getElementById("giftHow").innerHTML="Đã giao: "+p.items.join(" · ")+"<br><span style='color:var(--slate)'>🔁 Vòng lặp giữ khách: Giftee sẽ nhắc bạn dịp "+(S.occDate||"lễ")+" năm sau.</span>";
+    document.getElementById("codeBox").textContent="TRA-"+(S.code?S.code.slice(4):genCode().slice(4));
+    cta.textContent="🔎 Tra cứu minh chứng buổi lễ";cta.onclick=()=>toast("Mở minh chứng: ảnh/video buổi lễ & sổ đối soát (mô phỏng) 📜");
+    stopMusic();return;}
+  document.getElementById("giftEmoji").textContent=c.solemn?"🤍":"🎉";
+  document.getElementById("giftHead").textContent=c.solemn?"Đã gửi trọn tấm lòng":"Chúc mừng — khoảnh khắc đã lưu lại!";
+  document.getElementById("giftSub").textContent=c.solemn?"Khoảnh khắc tưởng niệm đã được lưu, kèm lời chia buồn tới gia quyến.":"Khoảnh khắc đã được lưu — và món quà đang chờ bạn.";
+  drawMoment();
+  document.getElementById("giftLabel").textContent=c.giftLabel;
+  document.getElementById("giftIcon").textContent=S.tier?S.tier.e:"🎁";
+  document.getElementById("giftValue").textContent=S.tier?S.tier.nm:"Quà tặng";
+  document.getElementById("giftHow").textContent=c.solemn?"Có thể quy đổi tiền mặt gửi gia quyến.":"Đổi bất kỳ quà nào trên Giftee, hoặc quy đổi giá trị.";
+  document.getElementById("codeBox").textContent=S.code||genCode();
+  cta.textContent="🛍️ Dùng trên nền tảng Giftee →";cta.onclick=toGiftee;
+  stopMusic();
+}
+function drawMoment(){const cv=document.getElementById("momentCanvas"),x=cv.getContext("2d"),W=cv.width,H=cv.height,c=cfg();
+  if(c.service){const p=S.pkg||CAUAN_PKGS[0];
+    const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,c.wash);g.addColorStop(1,"#FCFAF8");x.fillStyle=g;x.fillRect(0,0,W,H);
+    x.strokeStyle=c.accent;x.lineWidth=6;x.strokeRect(40,40,W-80,H-80);x.lineWidth=2;x.strokeRect(56,56,W-112,H-112);
+    x.textAlign="center";x.fillStyle=c.deep;x.font="bold 36px sans-serif";x.fillText("giftee ✳",W/2,120);
+    x.font="70px serif";x.fillText("🪷",W/2,210);
+    x.fillStyle="#1E1B19";x.font="bold 46px sans-serif";x.fillText("GIẤY CHỨNG NHẬN",W/2,300);x.fillText("LỄ CẦU BÌNH AN",W/2,352);
+    x.fillStyle="#4A423D";x.font="28px sans-serif";x.fillText("Nguyện cầu bình an & sức khỏe cho",W/2,430);
+    x.fillStyle=c.deep;x.font="bold 40px sans-serif";x.fillText(S.rcpName||"người thân",W/2,478);
+    x.fillStyle="#4A423D";x.font="26px sans-serif";x.fillText("do "+(S.sndName||"người con")+" thành tâm gửi tặng",W/2,528);
+    x.font="26px sans-serif";x.fillStyle="#8C827B";
+    x.fillText("🛕 "+(S.temple||""),W/2,600);x.fillText("Dịp: "+(S.occDate||""),W/2,640);
+    x.fillStyle="#fff";roundRect(x,120,690,W-240,120,20);x.fill();x.strokeStyle=c.accent;x.lineWidth=2;roundRect(x,120,690,W-240,120,20);x.stroke();
+    x.fillStyle="#1E1B19";x.font="bold 28px sans-serif";x.fillText(p.e+" "+p.nm,W/2,752);
+    x.fillStyle="#8C827B";x.font="22px sans-serif";x.fillText(vnd(p.price)+" · đã hoàn thành",W/2,788);
+    x.fillStyle=c.deep;x.font="30px sans-serif";x.fillText("🙏 Hồi hướng công đức",W/2,880);
+    x.fillStyle="#8C827B";x.font="22px sans-serif";x.fillText(new Date().toLocaleDateString("vi-VN"),W/2,930);return;}
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,c.wash);g.addColorStop(1,"#FCFAF8");x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.textAlign="center";x.fillStyle=c.deep;x.font="bold 40px sans-serif";x.fillText("giftee ✳",W/2,90);
+  x.font="72px serif";x.fillText(c.emoji,W/2,240);
+  x.fillStyle="#1E1B19";x.font="bold 50px sans-serif";x.fillText(c.solemn?"Thành kính phân ưu":c.name,W/2,360);
+  x.fillStyle="#4A423D";x.font="34px sans-serif";wrapText(x,S.message||c.open,W/2,440,W-140,44);
+  x.font="30px sans-serif";x.fillStyle="#8C827B";x.fillText("Gửi "+(S.rcpName||"bạn")+" · từ "+(S.sndName||"một người thân"),W/2,600);
+  x.fillStyle="#fff";roundRect(x,120,680,W-240,170,24);x.fill();x.strokeStyle=c.accent;x.lineWidth=2;roundRect(x,120,680,W-240,170,24);x.stroke();
+  x.font="56px serif";x.fillText(S.tier?S.tier.e:"🎁",W/2,760);
+  x.fillStyle="#1E1B19";x.font="bold 30px sans-serif";x.fillText((c.giftLabel)+": "+(S.tier?S.tier.nm:"Quà tặng"),W/2,815);
+  x.fillStyle="#8C827B";x.font="24px sans-serif";x.fillText(new Date().toLocaleDateString("vi-VN"),W/2,940);}
+function wrapText(ctx,text,cx,cy,maxW,lh){const words=(text||"").split(" ");let line="",y=cy;
+  for(const w of words){const t=line+w+" ";if(ctx.measureText(t).width>maxW&&line){ctx.fillText(line,cx,y);line=w+" ";y+=lh;}else line=t;}ctx.fillText(line,cx,y);}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function downloadMoment(){const cv=document.getElementById("momentCanvas");const a=document.createElement("a");
+  a.download="khoanh-khac-giftee.png";a.href=cv.toDataURL("image/png");a.click();toast("Đã lưu ảnh 💾");}
+function sendBack(){toast("Đã gửi ảnh khoảnh khắc lại cho "+(S.sndName||"người tặng")+" 💌");}
+function copyCode(){const c=document.getElementById("codeBox").textContent;
+  navigator.clipboard?.writeText(c).then(()=>toast("Đã sao chép: "+c)).catch(()=>toast("Mã: "+c));}
+function toGiftee(){toast("Mở nền tảng Giftee để đổi quà (mô phỏng) 🛍️");}
+
+/* ============ particles ============ */
+function spawnParticle(emoji){const cv=document.getElementById("particles");cv.style.display="block";
+  cv.width=innerWidth;cv.height=innerHeight;const x=cv.getContext("2d");x.font="34px serif";
+  x.fillText(emoji||"🎉",Math.random()*cv.width,cv.height-20);setTimeout(()=>{x.clearRect(0,0,cv.width,cv.height);},400);}
+function burst(dur,c){const cv=document.getElementById("particles");cv.style.display="block";cv.width=innerWidth;cv.height=innerHeight;
+  const x=cv.getContext("2d");const emo=c&&c.particle;const cols=[c?c.accent:"#F08B71","#E3A24A","#3E7C8C","#5E8C6A","#B57BA6"];
+  const P=Array.from({length:emo?60:140},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height,r:5+Math.random()*7,
+    c:cols[Math.floor(Math.random()*cols.length)],e:emo,vy:2+Math.random()*4,vx:-2+Math.random()*4,rot:Math.random()*6}));
+  const t0=performance.now();x.font="30px serif";
+  (function anim(t){x.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.y+=p.vy;p.x+=p.vx;p.rot+=.1;
+    if(p.e){x.fillText(p.e,p.x,p.y);}else{x.save();x.translate(p.x,p.y);x.rotate(p.rot);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);x.restore();}});
+    if(t-t0<dur)requestAnimationFrame(anim);else{x.clearRect(0,0,cv.width,cv.height);cv.style.display="none";}})(t0);}
+
+/* ============ restart ============ */
+function restart(){stopMic();stopMusic();if(camStream)camStream.getTracks().forEach(t=>t.stop());
+  Object.assign(S,{occ:null,videoURL:null,hasVideo:false,filter:"bright",bright:100,stickers:[],anim:"anim-float",message:"",music:null,tier:null,code:"",pkg:null,temple:null,occDate:null,dish:null,qty:null,shop:null});
+  document.getElementById("overlay").innerHTML="";document.getElementById("msgInput").value="";document.getElementById("msgOn").textContent="";
+  document.getElementById("musicToggle").style.display="none";document.getElementById("badge").textContent="Thiệp điện tử";
+  document.documentElement.style.setProperty("--accent","#F08B71");document.documentElement.style.setProperty("--accent-deep","#DE5F3E");document.documentElement.style.setProperty("--accent-wash","#FDEEE8");
+  go("home");}
+
+renderProg("home");
+mountOccShow();
+</script>
+</body>
+</html>
