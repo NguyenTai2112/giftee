@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Manrope:wght@500;700;800&family=Lora:ital,wght@0,500;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 
 <style>
@@ -1507,9 +1509,10 @@ footer .wrap{max-width:var(--maxw)}
         <h2 class="flow-h2 text-center">Đã gửi thiệp!</h2>
         <p class="flow-sub text-center">Email chứa liên kết thiệp đã gửi tới <b id="sentTo"></b>.</p>
         <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;text-align:center">
-          <span class="pill">Liên kết thiệp (mô phỏng)</span>
-          <p style="word-break:break-all;margin:10px 0;color:var(--muted);font-size:.86rem" id="fakeLink"></p>
-          <button class="btn dark block" onclick="openAsRecipient()">🔗 Mở thiệp dưới góc Người nhận →</button>
+          <span class="pill" id="linkTag">Liên kết thiệp trực tuyến</span>
+          <p style="word-break:break-all;margin:10px 0;color:var(--accent-deep);font-size:.86rem;font-weight:700" id="fakeLink"></p>
+          <button class="btn block" style="margin-bottom:8px" onclick="copyShareLink()">📋 Sao chép liên kết gửi người nhận</button>
+          <button class="btn ghost block" onclick="openAsRecipient()">🔗 Mở thiệp dưới góc Người nhận →</button>
         </div>
         <p class="f-note">Sản phẩm thật: email/Zalo chứa link riêng, người nhận mở trên thiết bị của họ. Demo mô phỏng bằng cách chuyển màn hình.</p>
       </div>
@@ -1858,6 +1861,18 @@ footer .wrap{max-width:var(--maxw)}
    GIFTEE — self-contained app logic (realtime + landing + flow)
    ============================================================ */
 
+/* ---------- Supabase Config ---------- */
+const SUPABASE_URL = "https://vsmsbtlngxpfyjypysri.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZzbXNidGxuZ3hwZnlqeXB5c3JpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MTI2NjIsImV4cCI6MjEwNTk4ODY2Mn0.mpCDFhbx4f3dlwt1fdUWBMgneOPsWdqZk6X51WUFPAw";
+let supabaseClient = null;
+try {
+  if (window.supabase && typeof window.supabase.createClient === "function") {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch (e) {
+  console.warn("Lỗi khởi tạo Supabase:", e);
+}
+
 /* ---------- helpers ---------- */
 function $(id){return document.getElementById(id);}
 function vnd(n){return n.toLocaleString("vi-VN")+"đ";}
@@ -1955,7 +1970,7 @@ function svcPlaces(){return cfg().shinto?SHRINES:TEMPLES;}
 const MELODIES={joy:{tempo:150,type:"triangle",gain:.05,seq:["C5","E5","G5","E5","F5","A5","G5","0"]},warm:{tempo:92,type:"sine",gain:.06,seq:["C4","E4","G4","0","A4","G4","E4","0"]},sweet:{tempo:120,type:"sine",gain:.05,seq:["G5","E5","C5","E5","D5","0","E5","0"]},solemn:{tempo:56,type:"sine",gain:.04,seq:["A3","0","C4","0","E4","0","D4","0"]}};
 const NOTES={"A3":220,"C4":261.63,"D4":293.66,"E4":329.63,"F4":349.23,"G4":392,"A4":440,"C5":523.25,"D5":587.33,"E5":659.25,"F5":698.46,"G5":783.99,"A5":880};
 
-const S={occ:null,videoURL:null,hasVideo:false,filter:"bright",bright:100,stickers:[],anim:"anim-float",message:"",music:null,tier:null,pkg:null,temple:null,rcpName:"",rcpEmail:"",sndName:"",code:""};
+const S={occ:null,videoURL:null,hasVideo:false,videoBlob:null,uploadedVideoUrl:null,filter:"bright",bright:100,stickers:[],anim:"anim-float",message:"",music:null,tier:null,pkg:null,temple:null,rcpName:"",rcpEmail:"",sndName:"",code:"",savedCardId:null};
 function cfg(){return OCC[S.occ]||OCC.birthday;}
 function filterCss(){const b=S.bright/100;const base=FILTERS[S.filter].css;return (base==="none"?"":base+" ")+"brightness("+b+")";}
 const FLOW_STD=["fl-occasion","fl-record","fl-filter","fl-decorate","fl-music","fl-price","fl-send","fl-sent","fl-r-open","fl-r-ritual","fl-r-gift"];
@@ -2052,7 +2067,7 @@ function startRec(){chunks=[];
     mediaRec.onstop=()=>{if(recDrawRAF){cancelAnimationFrame(recDrawRAF);recDrawRAF=null;}if(!chunks.length){camFallback("Không ghi được dữ liệu video — thử lại hoặc tải video có sẵn.");return;}
       const type=(mediaRec.mimeType||mime||"video/mp4").split(";")[0];const b=new Blob(chunks,{type});
       var _durMs=Math.max(1000,(20-((typeof recRemain==="number")?recRemain:0))*1000);
-      fixWebmDuration(b,_durMs,function(fb){S.videoURL=URL.createObjectURL(fb);S.hasVideo=true;showRecorded();});};
+      fixWebmDuration(b,_durMs,function(fb){S.videoURL=URL.createObjectURL(fb);S.videoBlob=fb;S.hasVideo=true;showRecorded();});};
     try{mediaRec.start(1000);}catch(e){try{mediaRec.start();}catch(e2){if(recDrawRAF){cancelAnimationFrame(recDrawRAF);recDrawRAF=null;}camFallback("Không bắt đầu quay được — hãy tải video có sẵn.");return;}}
     $("recDot").style.display="flex";$("recTimer").style.display="block";
     var svc=cfg().service,shi=cfg().shinto;
@@ -2153,7 +2168,7 @@ function showRecorded(){if(camStream){camStream.getTracks().forEach(t=>t.stop())
 }
 function retake(){_clearRecOverlay();S.hasVideo=false;S.videoURL=null;$("recControls").innerHTML='<button class="btn block" id="btnStartCam2">📹 Bật camera</button>';$("btnStartCam2").onclick=askRecConsent;askRecConsent();}
 function skipVideo(){_clearRecOverlay();S.hasVideo=false;S.videoURL=null;goFlow(nextAfterRecord());}
-$("uploadVid")&&($("uploadVid").onchange=e=>{const f=e.target.files[0];if(!f)return;S.videoURL=URL.createObjectURL(f);S.hasVideo=true;showRecorded();fToast("Đã tải video");});
+$("uploadVid")&&($("uploadVid").onchange=e=>{const f=e.target.files[0];if(!f)return;S.videoURL=URL.createObjectURL(f);S.videoBlob=f;S.hasVideo=true;showRecorded();fToast("Đã tải video");});
 
 /* ---------- filter ---------- */
 function mountFilter(){const v=$("filVideo"),bg=$("filBg");
@@ -2326,8 +2341,107 @@ function mountSend(){const c=cfg();let media;
     $("sendPreview").innerHTML=`<span class="pill">${c.emoji} ${c.name}</span>${media}<p style="font-weight:700;margin:12px 0 4px">${S.message||c.open}</p><div style="margin-top:6px;padding:12px;background:var(--accent-wash);border-radius:12px">🪷 <b>${p.e} ${p.nm}</b> · ${vnd(p.price)}${S.hasVideo?" · 🎥 kèm video":""}</div>`;return;}
   media=S.hasVideo?`<video src="${S.videoURL}" autoplay loop muted playsinline style="width:100%;border-radius:12px;filter:${filterCss()}"></video>`:`<div class="static-card compact" id="sendStaticCard" style="position:relative;aspect-ratio:3/4"></div>`;
   $("sendPreview").innerHTML=`<span class="pill">${c.emoji} ${c.name}</span>${media}<p style="font-weight:700;margin:12px 0 4px">${S.message||c.open}</p><p class="text-muted" style="font-size:.85rem">Nhãn: ${S.stickers.map(s=>s.emoji).join(" ")||"—"} · Nhạc: ${S.music?"🎵":"—"}</p><div style="margin-top:6px;padding:12px;background:var(--accent-wash);border-radius:12px">🎁 <b>${c.giftLabel}:</b> ${S.tier?S.tier.e+" "+S.tier.nm:"—"}</div>`;}
-function sendCard(){S.rcpName=($("rcpName").value.trim()||"Người nhận");S.rcpEmail=($("rcpEmail").value.trim()||"nguoinhan@email.com");S.sndName=($("sndName").value.trim()||"Một người thân");S.code=genCode();
-  $("sentTo").textContent=S.rcpName+" ("+S.rcpEmail+")";$("fakeLink").textContent="https://giftee.vn/thiep/"+Math.random().toString(36).slice(2,10);goFlow("fl-sent");}
+async function sendCard(){
+  S.rcpName=($("rcpName").value.trim()||"Người nhận");
+  S.rcpEmail=($("rcpEmail").value.trim()||"nguoinhan@email.com");
+  S.sndName=($("sndName").value.trim()||"Một người thân");
+  S.code=genCode();
+
+  const sendBtn=document.querySelector("#fl-send .btn.block");
+  if(sendBtn){sendBtn.disabled=true;sendBtn.textContent="⏳ Đang lưu thiệp lên hệ thống...";}
+
+  // 1. Tải video lên Supabase Storage nếu có video mới
+  if(S.videoBlob && !S.uploadedVideoUrl && supabaseClient){
+    try{
+      fToast("Đang tải video lên kho lưu trữ...");
+      const ext = (S.videoBlob.type && S.videoBlob.type.includes("mp4")) ? "mp4" : "webm";
+      const fname = `video_${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+      const { data: upData, error: upErr } = await supabaseClient.storage
+        .from('gift-videos')
+        .upload(fname, S.videoBlob, { contentType: S.videoBlob.type || 'video/webm' });
+      if(!upErr && upData){
+        const { data: pubData } = supabaseClient.storage.from('gift-videos').getPublicUrl(fname);
+        if(pubData && pubData.publicUrl){
+          S.uploadedVideoUrl = pubData.publicUrl;
+        }
+      }else{
+        console.warn("Upload video vào bucket gift-videos không thành công (có thể chưa tạo bucket):", upErr);
+      }
+    }catch(errVideo){
+      console.warn("Lỗi upload video:", errVideo);
+    }
+  }
+
+  // 2. Chuẩn bị dữ liệu các bước (Step Data)
+  const stickersData = (S.stickers || []).map(s => ({
+    emoji: s.emoji,
+    left: s.el ? s.el.style.left : (s.left || "42%"),
+    top: s.el ? s.el.style.top : (s.top || "40%"),
+    className: s.el ? s.el.className : (s.className || "sticker")
+  }));
+
+  const cardPayload = {
+    occ: S.occ,
+    hasVideo: S.hasVideo,
+    videoURL: S.uploadedVideoUrl || (S.videoURL && !S.videoURL.startsWith("blob:") ? S.videoURL : null),
+    filter: S.filter,
+    bright: S.bright,
+    frame: S.frame || "none",
+    stickers: stickersData,
+    anim: S.anim,
+    message: S.message,
+    music: S.music,
+    tier: S.tier,
+    pkg: S.pkg,
+    temple: S.temple,
+    rcpName: S.rcpName,
+    rcpEmail: S.rcpEmail,
+    sndName: S.sndName,
+    code: S.code,
+    expiryTs: S.expiryTs || (Date.now() + 30 * 86400000)
+  };
+
+  // 3. Lưu vào bảng 'cards' trên Supabase
+  let finalLink = "";
+  if(supabaseClient){
+    try{
+      fToast("Đang lưu dữ liệu thiệp vào Supabase...");
+      const { data, error } = await supabaseClient
+        .from('cards')
+        .insert([{ card_data: cardPayload }])
+        .select();
+
+      if(!error && data && data.length > 0){
+        const cardId = data[0].id;
+        S.savedCardId = cardId;
+        finalLink = window.location.origin + window.location.pathname + "?card=" + cardId;
+        fToast("Đã lưu thiệp thành công vào Database! 🎉");
+      }else{
+        console.error("Lỗi Supabase insert:", error);
+        fToast("Chưa lưu được vào DB (vui lòng tạo bảng cards). Tạo link giả lập tạm.");
+        finalLink = window.location.origin + window.location.pathname + "?card=" + Math.random().toString(36).slice(2,10);
+      }
+    }catch(errDb){
+      console.error("Lỗi kết nối Supabase:", errDb);
+      finalLink = window.location.origin + window.location.pathname + "?card=" + Math.random().toString(36).slice(2,10);
+    }
+  }else{
+    finalLink = window.location.origin + window.location.pathname + "?card=" + Math.random().toString(36).slice(2,10);
+  }
+
+  if(sendBtn){sendBtn.disabled=false;sendBtn.textContent="📧 Gửi thiệp qua email →";}
+  $("sentTo").textContent = S.rcpName + " (" + S.rcpEmail + ")";
+  $("fakeLink").textContent = finalLink;
+  goFlow("fl-sent");
+}
+function copyShareLink(){
+  const link = $("fakeLink") ? $("fakeLink").textContent : "";
+  if(link && navigator.clipboard){
+    navigator.clipboard.writeText(link).then(()=>fToast("Đã sao chép liên kết thiệp! 💌")).catch(()=>fToast("Liên kết: "+link));
+  }else if(link){
+    fToast("Liên kết: "+link);
+  }
+}
 function genCode(){const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let c="GFT-";for(let i=0;i<8;i++){c+=a[Math.floor(Math.random()*a.length)];if(i===3)c+="-";}return c;}
 function openAsRecipient(){document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("on"));goFlow("fl-r-open");}
 
@@ -2594,7 +2708,7 @@ function toGiftee(){fToast("Mở nền tảng Giftee để đổi quà 🛍️")
 function restartFlow(){stopMic();stopMusic();if(bowlInt){clearInterval(bowlInt);bowlInt=null;}if(expiryTimer){clearInterval(expiryTimer);expiryTimer=null;}
   ["recTemple","revTemple"].forEach(id=>{const e=$(id);if(e)e.style.display="none";});
   if(camStream)camStream.getTracks().forEach(t=>t.stop());
-  Object.assign(S,{occ:null,videoURL:null,hasVideo:false,filter:"bright",bright:100,stickers:[],anim:"anim-float",message:"",music:null,tier:null,pkg:null,temple:null,code:"",expiryTs:null});
+  Object.assign(S,{occ:null,videoURL:null,hasVideo:false,videoBlob:null,uploadedVideoUrl:null,filter:"bright",bright:100,stickers:[],anim:"anim-float",message:"",music:null,tier:null,pkg:null,temple:null,code:"",expiryTs:null,savedCardId:null});
   $("overlay").innerHTML="";$("msgInput").value="";$("msgOn").textContent="";const fab=$("musicFab");if(fab)fab.style.display="none";
   document.documentElement.style.setProperty("--accent","#FF7A59");document.documentElement.style.setProperty("--accent-deep","#E85A38");document.documentElement.style.setProperty("--accent-wash","#FFE9E0");
   goFlow("fl-occasion");goSection("section-home");}
@@ -2734,10 +2848,78 @@ function renderPhoBoard(){const b=$("phoBody");const pool=phoPool();
 function openBinhAn(){closeModal("modalBinhAn");fToast("🪷 Bắt đầu tạo Cầu bình an — quay video lời nguyện");pickOccasion("cauan");}
 function openShinto(){fToast("⛩️ Bắt đầu Cầu an Thần đạo — quay lời khấn tại đền");pickOccasion("shinto");}
 
+/* ---------- Tự động đọc dữ liệu từ Supabase khi người nhận mở link ---------- */
+async function checkUrlForCard(){
+  const urlParams = new URLSearchParams(window.location.search);
+  const cardId = urlParams.get("card");
+  if(!cardId) return;
+
+  if(!supabaseClient){
+    console.warn("Supabase client chưa sẵn sàng để đọc card");
+    return;
+  }
+
+  fToast("Đang mở thiệp được gửi tặng...");
+  try{
+    const { data, error } = await supabaseClient
+      .from('cards')
+      .select('*')
+      .eq('id', cardId)
+      .single();
+
+    if(!error && data && data.card_data){
+      const cd = data.card_data;
+      S.occ = cd.occ || "birthday";
+      S.hasVideo = !!cd.hasVideo;
+      S.videoURL = cd.videoURL || null;
+      S.filter = cd.filter || "bright";
+      S.bright = cd.bright !== undefined ? cd.bright : 100;
+      S.frame = cd.frame || "none";
+      S.anim = cd.anim || "anim-float";
+      S.message = cd.message || "";
+      S.music = cd.music || null;
+      S.tier = cd.tier || null;
+      S.pkg = cd.pkg || null;
+      S.temple = cd.temple || null;
+      S.rcpName = cd.rcpName || "Người nhận";
+      S.rcpEmail = cd.rcpEmail || "";
+      S.sndName = cd.sndName || "Một người thân";
+      S.code = cd.code || genCode();
+      S.expiryTs = cd.expiryTs || null;
+
+      // Tái tạo lại danh sách sticker
+      S.stickers = (cd.stickers || []).map(s => {
+        const dummy = document.createElement("div");
+        dummy.className = s.className || ("sticker " + (S.anim || "anim-float"));
+        dummy.style.left = s.left || "42%";
+        dummy.style.top = s.top || "40%";
+        return { emoji: s.emoji, el: dummy };
+      });
+
+      // Cập nhật màu sắc chủ đề theo dịp
+      const o = cfg();
+      document.documentElement.style.setProperty("--accent", o.accent);
+      document.documentElement.style.setProperty("--accent-deep", o.deep);
+      document.documentElement.style.setProperty("--accent-wash", o.wash);
+
+      // Chuyển thẳng sang màn hình mở thiệp của người nhận
+      goSectionSilent("section-flow");
+      goFlow("fl-r-open");
+      fToast("Đã tải thiệp từ " + (S.sndName || "người thân") + " ✨");
+    } else {
+      console.warn("Không tìm thấy thiệp:", error);
+      fToast("Không tìm thấy thiệp hoặc liên kết không hợp lệ");
+    }
+  }catch(e){
+    console.error("Lỗi khi tải thiệp:", e);
+  }
+}
+
 /* ============ INIT ============ */
 function initApp(){
   tick();setInterval(tick,1000);liveTick();setInterval(liveTick,2000);initFeed();initCountdowns();
   const fab=$("musicFab")||(function(){const f=document.createElement("button");f.id="musicFab";f.className="music-fab";f.textContent="🔊";f.onclick=()=>{if(musicOn){stopMusic();f.textContent="🔇";}else if(cfg().shinto){playShrineAmbient();f.textContent="🔊";}else if(cfg().service){playTempleAmbient();f.textContent="🔊";}else if(S.music){playMusic(S.music);f.textContent="🔊";}};document.body.appendChild(f);return f;})();
+  checkUrlForCard();
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initApp);else initApp();
 
